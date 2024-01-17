@@ -1,15 +1,22 @@
 import json
-import pdb
-
 import pandas as pd
+from flask import Flask
+
+app = Flask(__name__)
 
 
-def normalize_match_data():
+@app.route('/')
+def hinge_data_analysis():
+    return 'Hinge Data Analysis'
+
+
+
+def load_match_data():
     """
     Loads the matches.json file provided by Hinge through the Data Export request
     :return: a DataFrame of normalized match event data
     """
-    json_file_path = 'data/test.json'
+    json_file_path = 'data/test2.json'
 
     # opening json file
     with open(json_file_path, 'r') as file:
@@ -39,21 +46,32 @@ def calculate_ratio(df, numerator: str, denominator: str, group_by=None):
         return (df["type"] == numerator).sum() / (df["type"] == denominator).sum()
 
 
-def total_counts_by_action_type(df, action_type: str):
+def total_counts(df):
     """
-    Counts total number of occurrences for a particular action_type.
+    Counts the total number of occurrences for each action_type.
     :param df: the DataFrame to analyze
-    :param action_type: the specific action type to count
-    :return: total count of occurrences
+    :return: a DataFrame of total count of occurrences for each action type
     """
-    return (df["type"] == action_type).sum()
+    # get counts of each of the different action types
+    chat_count = len(df[df['type'] == "chats"])
+    match_count = len(df[df['type'] == "match"])
+    like_count = len(df[df['type'] == "like"])
+    block_count = len(df[df['type'] == "block"])
+    distinct_interactions = len(pd.unique(df['interaction_id']))
+    print(distinct_interactions)
+
+    # build a DataFrame with the total counts
+    totals = pd.DataFrame([['Likes', like_count], ['Matches', match_count], ['Outgoing Messages', chat_count], ['Blocks', block_count],
+                           ['Distinct Interactions', distinct_interactions]],
+                          columns=["Action Type", "Count"])
+    return totals
 
 
-def total_messages_sent(df):
+def outgoing_messages(df):
     """
-    Total outgoing messages sent.
-    :param df: the DataFrame to analyze.
-    :return: the total number of outgoing messages sent
+    Captures the outgoing messages sent.
+    :param df: the DataFrame to analyze
+    :return: a DataFrame with outgoing messages
     """
     # creating a filter to use in the where clause
     where_clause = df["type"] == "chats"
@@ -61,11 +79,11 @@ def total_messages_sent(df):
     # filtering data to just chat events that have messages
     chats_w_messages = df.where(where_clause)
     chats_w_messages = chats_w_messages[chats_w_messages['body'].notna()]
-    return len(chats_w_messages)
+
+    return chats_w_messages
 
 
 if __name__ == '__main__':
-    normalized_events = normalize_match_data()
-    print(normalized_events)
-    total_messages_sent(normalized_events)
+    normalized_events = load_match_data()
+    outgoing_messages(normalized_events)
 

@@ -6,6 +6,14 @@ __version__ = "0.0.0"
 
 import json
 import pandas as pd
+from dash import Dash, html
+
+app = Dash(__name__)
+
+
+app.layout = html.Div([
+    html.Div(children='Hinge Data Analysis')
+])
 
 
 def load_match_data():
@@ -81,6 +89,7 @@ def outgoing_messages(df):
 
 
 if __name__ == '__main__':
+    app.run(debug=True)
     normalized_events = load_match_data()
     outgoing_messages(normalized_events)
 

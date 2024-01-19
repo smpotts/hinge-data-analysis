@@ -6,14 +6,6 @@ __version__ = "0.0.0"
 
 import json
 import pandas as pd
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def hinge_data_analysis():
-    return 'Hinge Data Analysis'
 
 
 def load_match_data():

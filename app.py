@@ -4,11 +4,10 @@ Hinge Data Analysis
 __author__ = "Shelby Potts"
 __version__ = "0.0.0"
 
-import pandas as pd
 import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
-import utils.match_data_utility as mdu
+import utils.data_import_utility as mdu
 import utils.match_analytics as ma
 
 # Initialize the app - incorporate a Dash Mantine theme
@@ -16,13 +15,13 @@ external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 # capture the normalized_events
-normalized_events = mdu.MatchDataUtility.load_match_data()
+normalized_events = mdu.load_match_data()
 # persist DataFrame with total counts
-totals_df = ma.MatchAnalytics.total_counts(normalized_events)
+totals_df = ma.total_counts(normalized_events)
 # get the breakdown of single vs double likes given just the normalized events that are 'likes'
-like_freq_df = ma.MatchAnalytics.analyze_double_likes(normalized_events[normalized_events["type"] == "like"])
+like_freq_df = ma.analyze_double_likes(normalized_events[normalized_events["type"] == "like"])
 # counts of likes with and without comments
-like_w_wo_comments_df = ma.MatchAnalytics.analyze_outgoing_likes(normalized_events)
+like_w_wo_comments_df = ma.analyze_outgoing_likes(normalized_events)
 
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h3"),

@@ -4,39 +4,15 @@ Hinge Data Analysis
 __author__ = "Shelby Potts"
 __version__ = "0.0.0"
 
-import json
 import pandas as pd
 import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
+import utils.hinge_data_analysis_utility as hdau
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
-
-
-def load_match_data():
-    """
-    Loads the matches.json file provided by Hinge through the Data Export request
-    :return: a DataFrame of normalized match event data
-    """
-    json_file_path = 'data/export/matches.json'
-
-    # opening json file
-    with open(json_file_path, 'r') as file:
-        # raw data is a list of dictionaries "list of interactions with a person"
-        raw_data = json.load(file)
-
-    events = []
-    for interaction, all_actions in enumerate(raw_data):
-        # action type is like, match, chats, blocks, overarching "action"
-        for action_type, actions in all_actions.items():
-            # action is the metadata assoc. one event of the action type
-            for action in actions:
-                action["interaction_id"] = interaction
-                events.append(action)
-
-    return pd.DataFrame(events).sort_values("timestamp")
 
 
 def total_counts(df):
@@ -116,7 +92,7 @@ def outgoing_messages(df):
 
 
 # capture the normalized_events
-normalized_events = load_match_data()
+normalized_events = hdau.HingeDataAnalysisUtility.load_match_data()
 # persist DataFrame with total counts
 totals_df = total_counts(normalized_events)
 # get the breakdown of single vs double likes given just the normalized events that are 'likes'

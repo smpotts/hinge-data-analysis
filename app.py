@@ -1,71 +1,53 @@
-import json
-import pdb
+"""
+Hinge Data Analysis
+"""
+__author__ = "Shelby Potts"
+__version__ = "0.0.0"
 
-import pandas as pd
+import plotly.express as px
+from dash import Dash, html, dash_table, dcc
+import dash_mantine_components as dmc
+import utils.data_import_utility as mdu
+import utils.match_analytics as ma
 
+# Initialize the app - incorporate a Dash Mantine theme
+external_stylesheets = [dmc.theme.DEFAULT_COLORS]
+app = Dash(__name__, external_stylesheets=external_stylesheets)
 
-def normalize_match_data():
-    """
-    Loads the matches.json file provided by Hinge through the Data Export request
-    :return: a DataFrame of normalized match event data
-    """
-    json_file_path = 'data/test.json'
+# capture the normalized_events
+normalized_events = mdu.load_match_data()
+# persist DataFrame with total counts
+totals_df = ma.total_counts(normalized_events)
+# get the breakdown of single vs double likes given just the normalized events that are 'likes'
+like_freq_df = ma.analyze_double_likes(normalized_events[normalized_events["type"] == "like"])
+# counts of likes with and without comments
+like_w_wo_comments_df = ma.analyze_outgoing_likes(normalized_events)
 
-    # opening json file
-    with open(json_file_path, 'r') as file:
-        # raw data is a list of dictionaries "list of interactions with a person"
-        raw_data = json.load(file)
+app.layout = html.Div([
+    dmc.Title('Hinge Data Analysis', color="black", size="h3"),
+    # funnel graph showing breakdown of interactions
+    dmc.Text("Interaction Funnel", size="lg", align="center", weight=500),
+    dmc.Text("This funnel represents the funnel of your interactions with people on Hinge. The outermost layer "
+             "represents the total number of interactions you had (outgoing likes, incoming likes, and people blocked "
+             "from the deck. Then it shows the number of outgoing likes sent, matches received, and conversations "
+             "started from those matches.", align="center"),
+    dcc.Graph(figure=px.funnel(totals_df, x=totals_df["Count"], y=totals_df["Action Type"])),
+    # pie chart showing single vs multiple likes
+    dmc.Text("Liked Once vs Liked Multiple Times", size="lg", align="center", weight=500),
+    dmc.Text("Hinge sometimes shows you people you have already liked before. This is a breakdown of how many people "
+             "you sent a single like to and how many people you liked more than once.", align="center"),
+    dcc.Graph(figure=px.pie(like_freq_df, values="Count", names="Like Frequency")),
+    # pie chart showing outgoing likes that included a comment
+    dmc.Text("Outgoing Likes With/ Without Comments", size="lg", align="center", weight=500),
+    dmc.Text("This pie chart represents the counts of outgoing likes you sent with and without a comment on the other"
+             " person's profile.", align="center"),
+    dcc.Graph(figure=px.pie(like_w_wo_comments_df, values="Count", names="Likes With/ Without Comments")),
 
-    events = []
-    for interaction, all_actions in enumerate(raw_data):
-        # action type is like, match, chats, blocks, overarching "action"
-        for action_type, actions in all_actions.items():
-            # action is the metadata assoc. one event of the action type
-            for action in actions:
-                action["interaction_id"] = interaction
-                events.append(action)
-
-    return pd.DataFrame(events).sort_values("timestamp")
-
-
-def calculate_ratio(df, numerator: str, denominator: str, group_by=None):
-    if group_by:
-        pass
-        # do a thing return a series
-#             result = numerator.group_by(group_by) / denominator.group_by(group_by)
-#             # TODO: return the result
-#             pass
-    else:
-        return (df["type"] == numerator).sum() / (df["type"] == denominator).sum()
-
-
-def total_counts_by_action_type(df, action_type: str):
-    """
-    Counts total number of occurrences for a particular action_type.
-    :param df: the DataFrame to analyze
-    :param action_type: the specific action type to count
-    :return: total count of occurrences
-    """
-    return (df["type"] == action_type).sum()
-
-
-def total_messages_sent(df):
-    """
-    Total outgoing messages sent.
-    :param df: the DataFrame to analyze.
-    :return: the total number of outgoing messages sent
-    """
-    # creating a filter to use in the where clause
-    where_clause = df["type"] == "chats"
-
-    # filtering data to just chat events that have messages
-    chats_w_messages = df.where(where_clause)
-    chats_w_messages = chats_w_messages[chats_w_messages['body'].notna()]
-    return len(chats_w_messages)
+    # TODO: get rid of this junk...
+    dash_table.DataTable(data=totals_df.to_dict('records'), page_size=10)
+])
 
 
 if __name__ == '__main__':
-    normalized_events = normalize_match_data()
-    print(normalized_events)
-    total_messages_sent(normalized_events)
+    app.run(debug=True)
 

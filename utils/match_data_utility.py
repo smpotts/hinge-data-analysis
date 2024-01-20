@@ -2,7 +2,7 @@ import json
 import pandas as pd
 
 
-class HingeDataAnalysisUtility:
+class MatchDataUtility:
     @staticmethod
     def load_match_data():
         """

@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 def activity_by_date(df):
@@ -66,7 +67,19 @@ def total_counts(df):
     return totals
 
 
-def analyze_outgoing_likes(df):
+def commented_outgoing_likes(df):
+    # TODO: this part of the method is a duplicate of like_comment_ratios
+    likes_w_comments = []
+    likes = df["like"].dropna()
+    for value in likes:
+        record = value[0]
+        if record.get('comment') is not None:
+            likes_w_comments.append(record.get('comment'))
+
+    return pd.DataFrame(likes_w_comments, columns=["Comments"])
+
+
+def like_comment_ratios(df):
     """
     Gathers statistics about how many outgoing likes included a comment.
     :param df: a DataFrame of normalized events
@@ -80,26 +93,33 @@ def analyze_outgoing_likes(df):
             likes_w_comments.append(record.get('comment'))
     likes_wo_comment = len(df) - len(likes_w_comments)
 
-    # build a DataFrame with the breakdown of outgoing likes
     likes_w_wo_comments = pd.DataFrame(
         [['Likes with Comments', len(likes_w_comments)], ['Likes without Comments', likes_wo_comment]],
         columns=["Likes With/ Without Comments", "Count"])
-
     return likes_w_wo_comments
 
 
-def outgoing_messages(df):
-    """
-    Captures the outgoing messages sent.
-    :param df: the DataFrame to analyze
-    :return: a DataFrame with outgoing messages
-    """
+def phone_number_shares(df):
     # creating a filter to use in the where clause
     where_clause = df["type"] == "chats"
 
     # filtering data to just chat events that have messages
     chats_w_messages = df.where(where_clause)
     chats_w_messages = chats_w_messages[chats_w_messages['body'].notna()]
-    print(chats_w_messages)
+    total_chats = len(chats_w_messages)
+    # outgoing_messages()
+    body = chats_w_messages['body']
 
-    return chats_w_messages
+    gave_number = []
+    for message in body:
+        # uses a regular expression to find phone numbers in the message body
+        result = re.findall(r"\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}", message)
+
+        # append the message to a list if there was a match in the result
+        if len(result) >= 1:
+            gave_number.append(result)
+
+    number_shares = pd.DataFrame([['Gave Phone Number', len(gave_number)], ['Did Not Give Phone Number', total_chats]],
+                                 columns=["Message Outcomes", "Count"])
+
+    return number_shares

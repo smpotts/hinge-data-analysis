@@ -8,6 +8,7 @@ import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
 import utils.match_analytics as ma
+import utils.user_analytics as ua
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
@@ -87,4 +88,5 @@ app.layout = html.Div([
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    ua.public_ip_location("207.229.129.39")

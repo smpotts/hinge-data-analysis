@@ -1,46 +1,50 @@
-# Hinge Data Analysis
-Hinge allows users to request an export of their data that was collected while they were using the app. It takes a few days to fulfill this request, and once the data are ready Hinge emails you a .zip file.
+## Overview
+Hinge allows users to request an export of their data that was collected while they were using the app. If you have a Hinge account, you can request your data by going to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and once the data are ready, Hinge emails you a `.zip` file with your personal data.
 
-The .zip file contains several .json files pertaining to different data Hinge has collected, as well as an HTML file to render the .json data in tabs locally.
+### The Data Export Provided by Hinge
+The data export provided my Hinge contains several files, but the main thing is the `index.html` file, which is used to render a web page with tabs showing different data. The tabs provided by Hinge are labeled: User, Matches, Prompts, Media, Subscriptions, Fresh Starts, and Selfie Verification. Aside from viewing changes to your prompts or seeing which pictures you've uploaded, these data are not particularly useful, especially on the Matches tab which should be the most interesting part.
 
-For the purposes of this analysis, I am only concerned with the data in the matches.json file.
+The Matches tab in the Hinge export contains a list of "Matches", or rather "interactions" as I call them in this project, like this:
 
-## Analyzing Match Data
-The data in the matches.json file are very difficult to work with, which no doubt is by design. After normalizing the data, they are a bit easier to work with, but the schema Hinge provides leaves a lot to be desired. Hinge does not provide an explanation of the match data in the export they give you, nor have I been able to find anything like that online. In light of that, this is my best effort to make sense of the data provided.
+**Match # 1**
+2024-01-22 20:13:22
+Like
+
+**Match # 2**
+2024-01-23 20:15:42
+Like
+
+**Match # 3**
+2024-01-23 20:37:27
+Match
+
+2024-01-23 20:39:45
+Chat: Hello, World!
+
+2024-01-23 21:49:26
+Remove
+
+The list of Matches provided by Hinge leaves a lot to be desired, which is why I decided to build this project analyzing and visualizing interesting insights from the Hinge data export.
+
+## Caveat
+Hinge changes and updates the schema of the data export from time to time, and that may or may not break the current analysis code and make things obsolete or potentially break things. So far, I haven't experienced any schema changes that have broken my code, but I assume that over time, changes will occur and things will no longer work. I haven't found a way to stay up to date with their schema changes at this time.
 
 ## Assumptions
-Since the data are messy and Hinge does not provide a schema or an explanation about the data, I have made some assumptions that I will use throughout the analysis.
-1. When there is an independent "like" record, it means there was an incoming like (i.e. someone liked you) 
-   1. The reason I think this is the case is that users get up to 10 outgoing matches per day, so given that, one would expect to see TONS of likes (roughly 10 per day) if the data were capturing outgoing likes
-2. For records that have a "match" but do not contain a "like" in the same record, this assumes that there was an outgoing like first (i.e. you liked the other person first and they matched back)
-   1. This is because I believe the "like" data being captured in this data set pertain to likes a user receives not sends
-3. Unmatches (blocks `where block_type = 'remove'`) could go either direction
-   1. There is no indication who removed the match with who and there's no way to tell 
-   2. Also includes people you come across while swiping that you want to permanently remove from the deck
+Since there is no documentation provided by Hinge, here are some assumptions I am making about the data:
+1. Blocks, or matches (`where block_type = 'remove'`) could go either direction, meaning that block could represent someone removing the match with you, or it could represent you removing the block with someone else
+	1. I assume this also includes people you come across while swiping that you want to remove from the deck
+2. Matches without a like in the same event mean that someone liked you first, and you matched with them (i.e. there was no outgoing like sent first)
 
-### Scenario Matrix
-After analyzing the data in matches.json, I have come up with my best guess of the different scenarios that are happening in the data.
+## Scenario Matrix
+There are several possible scenarios happening in the export data in what Hinge refers to as "matches". These are not all "matches", because some events are simply outgoing likes that were not reciprocated. This is why I refer to them as **interactions**, where an interaction represents the encounters (likes, matches, chats, blocks) that occurred between you and another person. 
 
-| Like | Match | Chats | Block | Action/ Notes | Var Name |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-| X |  |  |  | Received an incoming like | incoming_likes |
-| X | X | X |  | Received an incoming like, sent an outgoing like back, exchanged messages | incoming_like_match_chat |
-|  | X |  |  | An outgoing like was sent first, other person liked back, no messages exchanged  | outgoing_like_match |
-|  |  |  | X | Unmatched, can't tell who unmatched who, no way to tell which interaction it is linked to | stray_unmatches |
-|  | X |  | X | Outgoing like first, matched, no chat and unmatched | outgoing_like_match_unmatch |
-|  | X | X | X | Outgoing like first, matched, chatted, unmatched | outgoing_like_match_chat_unmatch |
+Here are the different scenarios of interactions that occur in the data: 
 
-## Holes in the data
-- There are stray blocks `where block_type = 'remove'` that cannot be tied to a like, match, chat, etc. which doesn't make sense because in order for there to be an un-match, there has to have been a like and a match
-- In some cases you can't see who took what action
-    - It's unclear who un-matches who
-    - When we have just a match, it's not clear who liked who first
-    - It's not clear whether the likes on their own can be linked to messages and chats or if they were unrequited likes
-- We can have matches without a corresponding "like", which isn't possible because there has to be an outgoing like for there to have been a match
+| Like | Match | Chats | Block | Meaning |
+| ---- | ---- | ---- | ---- | ---- |
+| X |  |  |  | You sent an outgoing, the person did not like you back |
+| X | X | X |  | You sent an outgoing like, the other person liked you back, at least one message was exchanged |
+|  | X | X |  | You received an incoming like, you liked the other person back and at least one message was exchanged |
+|  |  |  | X | The match was removed or "unmatched", can't tell who unmatched who. For some reason, a lot of these exist without any other information and there is no way to tell which interaction it was originally linked to |
+|  | X |  | X | You received an incoming like, you liked the other person back, no messages were exchanged, and the match was removed |
 
-## How Hinge obfuscates data in the export
-- There are no ids on the records to link the data
-- The data are not in chronological order
-- They only provide timestamps for the events and no other information about the exchange
-- The data structure is extremely difficult to work with
-- Can't tell who is doing which actions (i.e. who likes first, who unmatches who, etc.)

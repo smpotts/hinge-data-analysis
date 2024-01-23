@@ -28,6 +28,8 @@ action_type_freq_per_day = ma.activity_by_date(normalized_events)
 number_shares = ma.phone_number_shares(normalized_events)
 # save commented outgoing likes
 commented_likes = ma.commented_outgoing_likes(normalized_events)
+# counts of message per chat
+chat_counts = ma.date_count_distribution(normalized_events)
 
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
@@ -70,16 +72,22 @@ app.layout = html.Div([
                              y=action_type_freq_per_day['count'],
                              color=action_type_freq_per_day['type'])),
 
+    # pie chart showing percentage of interactions with a phone number share
     dmc.Text("How Many People Did You Give Your Number To?", size="xl", align="center", weight=500),
     dmc.Text("This is the ratio of people you shared your phone number with out of the total number of people you "
              "had chats with. This operates on the assumption you gave your phone number in a standard format, "
              "ex: XXX-XXX-XXXX, XXXXXXXXXX, or (XXX)XXX-XXXX.",
              align="center"),
-    dcc.Graph(figure=px.pie(number_shares, values="Count", names="Message Outcomes"))
+    dcc.Graph(figure=px.pie(number_shares, values="Count", names="Message Outcomes")),
+
+    # histogram showing the number of outgoing messages in each chat
+    dmc.Text("Outgoing Messages Sent per Chat", size="xl", align="center", weight=500),
+    dmc.Text("This histogram shows the number of outgoing messages you sent in each chat.",
+             align="center"),
+    dcc.Graph(figure=px.histogram(chat_counts, x='outgoing_messages', nbins=50).update_layout(bargap=0.2))
 
 ])
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-

@@ -2,6 +2,19 @@ import pandas as pd
 import re
 
 
+def date_count_distribution(df):
+    # grab 'chat' events
+    chats_df = df[df["type"] == "chats"]
+
+    # get counts of chats for each interaction
+    chats_per_interaction = chats_df.groupby('interaction_id').size()
+
+    # convert the Series to a DataFrame with specified column names, have to reset the index
+    interaction_counts = chats_per_interaction.to_frame().reset_index()
+    interaction_counts.columns = ['interaction_id', 'outgoing_messages']
+    return interaction_counts
+
+
 def activity_by_date(df):
     """
     Adds a date field to the normalized_events DataFrame and calculates counts of activity_type

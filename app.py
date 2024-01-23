@@ -7,29 +7,26 @@ __version__ = "0.0.0"
 import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
-import utils.data_utility as du
 import utils.match_analytics as ma
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
-# capture the normalized_events
-normalized_events = du.load_match_data()
 # persist DataFrame with total counts
-totals_df = ma.total_counts(normalized_events)
+totals_df = ma.total_counts()
 # get the breakdown of single vs double likes given just the normalized events that are 'likes'
-like_freq_df = ma.analyze_double_likes(normalized_events[normalized_events["type"] == "like"])
+like_freq_df = ma.analyze_double_likes()
 # counts of likes with and without comments
-like_w_wo_comments_df = ma.like_comment_ratios(normalized_events)
+like_w_wo_comments_df = ma.like_comment_ratios()
 # capture action types per day
-action_type_freq_per_day = ma.activity_by_date(normalized_events)
+action_type_freq_per_day = ma.activity_by_date()
 # get ratio of phone number shares
-number_shares = ma.phone_number_shares(normalized_events)
+number_shares = ma.phone_number_shares()
 # save commented outgoing likes
-commented_likes = ma.commented_outgoing_likes(normalized_events)
+commented_likes = ma.commented_outgoing_likes()
 # counts of message per chat
-chat_counts = ma.date_count_distribution(normalized_events)
+chat_counts = ma.date_count_distribution()
 
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),

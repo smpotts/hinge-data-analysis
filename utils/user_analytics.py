@@ -27,5 +27,4 @@ def parse_user_ip_addresses():
 
     # define column names and create a DataFrame
     coordinates = pd.DataFrame({'latitude': lats, 'longitude': longs})
-    print(coordinates.to_string())
     return coordinates

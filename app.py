@@ -29,8 +29,74 @@ commented_likes = ma.commented_outgoing_likes()
 # counts of message per chat
 chat_counts = ma.date_count_distribution()
 
+header = [
+    html.Thead(
+        html.Tr(
+            [
+                html.Th("Like"),
+                html.Th("Match"),
+                html.Th("Chats"),
+                html.Th("Block"),
+                html.Th("Meaning"),
+            ]
+        )
+    )
+]
+
+row1 = html.Tr([html.Td("X"), html.Td(""), html.Td(""), html.Td(""), html.Td("You sent an outgoing, the person did not like you back")])
+row2 = html.Tr([html.Td("X"), html.Td("X"), html.Td("X"), html.Td(""), html.Td("You sent an outgoing like, the other person liked you back, at least one message was exchanged")])
+row3 = html.Tr([html.Td(""), html.Td("X"), html.Td("X"), html.Td(""), html.Td("You received an incoming like, you liked the other person back and at least one message was exchanged")])
+row4 = html.Tr([html.Td(""), html.Td(""), html.Td(""), html.Td("X"), html.Td("The match was removed or unmatched, can't tell who unmatched who. For some reason, a lot of these exist without any other information and there is no way to tell which interaction it was originally linked to")])
+row5 = html.Tr([html.Td(""), html.Td("X"), html.Td(""), html.Td("X"), html.Td("You received an incoming like, you liked the other person back, no messages were exchanged, and the match was removed")])
+
+body = [html.Tbody([row1, row2, row3, row4, row5])]
+
+
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
+    dmc.Space(h=20),
+    dmc.Text("Overview", style={"fontSize": 28}, weight=500),
+    dmc.Text("This application is meant to help provide meaningful insights about interactions users have had with "
+             "people on the Hinge dating app. Hinge allows users to request an export of their personal data that was "
+             "collected while they were using the app. If you have a Hinge account, you can request your data by going "
+             "to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and "
+             "once the data are ready, Hinge emails you a .zip file with your personal data."),
+    dmc.Space(h=20),
+    dmc.Text("The data export provided by Hinge contains several files, but the main thing is the index.html file, "
+             "which is used to render a webpage with tabs showing different data. The tabs provided by Hinge are "
+             "labeled: User, Matches, Prompts, Media, Subscriptions, Fresh Starts, and Selfie Verification. Aside from "
+             "viewing changes to your prompts or seeing which pictures you've uploaded, these data are not "
+             "particularly useful, especially the Matches tab which is the most disappointing. The Matches tab "
+             "contains a list of `matches`, but I actually refer to them as `interactions` in this project because "
+             "not all of them are true matches. Needless to say the export provided by Hinge leaves a lot to be "
+             "desired, which is why I decided to build this project to analyze and visualize interesting insights "
+             "from the Hinge data export."),
+    dmc.Space(h=20),
+    dmc.Text("Caveats", style={"fontSize": 28}, weight=500),
+    dmc.Text("1. Hinge does not provide any documentation about the data in the export so this analysis is based off my"
+             "own inferences from working with the data."),
+    dmc.Text("2. Hinge occasionally updates and modifies the data they send in the export which may or may not make "
+             "aspects of the analysis obsolete or worse, break the program."),
+    dmc.Space(h=20),
+    dmc.Text("Assumptions", style={"fontSize": 28}, weight=500),
+    dmc.Text("Since there is no documentation provided by Hinge, here are some assumptions I am making about the source data: "),
+    dmc.Text("1. Unmatches, or `blocks` as Hinge refers to them in the data, could go either direction, meaning you "
+             "could have unmatched the other person or they could have unmatched you. Hinge does not include any "
+             "additional data in these events to tell who unmatched who."),
+    dmc.Text("2. Matches without a like in the same event mean that someone liked you first, and you matched with them"
+             " (i.e. there was no outgoing like)"),
+    dmc.Space(h=20),
+    dmc.Text("Scenario Matrix", style={"fontSize": 28}, weight=500),
+    dmc.Text("There are several possible scenarios happening in the export data in what Hinge refers to as `matches`. "
+             "These are not all `matches`, because some events are simply outgoing likes that were not reciprocated. "
+             "This is why I refer to them as interactions, where an interaction represents the encounters (likes, "
+             "matches, chats, blocks) that occurred between you and another person. "),
+    dmc.Space(h=10),
+    dmc.Text("Here are the different scenarios of interactions that occur in the data: "),
+    dmc.Space(h=10),
+    dmc.Table(header + body),
+
+    dmc.Space(h=20),
     # funnel graph showing breakdown of interactions
     dmc.Text("Interaction Funnel", size="xl", align="center", weight=500),
     dmc.Text("This funnel represents the funnel of your interactions with people on Hinge. The outermost layer "
@@ -84,9 +150,16 @@ app.layout = html.Div([
              align="center"),
     dcc.Graph(figure=px.histogram(chat_counts, x='outgoing_messages', nbins=50).update_layout(bargap=0.2))
 
+
+    # dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
+    #             hover_data=["airport", "city", "state", "cnt"],
+                # color="cnt",
+                # color_continuous_scale=px.colors.cyclical.IceFire,
+                # projection="orthographic"))
 ])
 
 
+
+
 if __name__ == '__main__':
-    # app.run(debug=True)
-    ua.public_ip_location("207.229.129.39")
+    app.run(debug=True)

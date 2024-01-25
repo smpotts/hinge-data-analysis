@@ -7,8 +7,7 @@ __version__ = "0.0.0"
 import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
-import utils.match_analytics as ma
-import utils.user_analytics as ua
+import src.match_analytics as ma
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
@@ -29,7 +28,8 @@ commented_likes = ma.commented_outgoing_likes()
 # counts of message per chat
 chat_counts = ma.date_count_distribution()
 
-user_coords = ua.parse_user_ip_addresses()
+# TODO: commenting this out for now because it's so slow
+# user_coords = ua.parse_user_ip_addresses()
 
 
 app.layout = html.Div([
@@ -37,10 +37,12 @@ app.layout = html.Div([
     dmc.Space(h=20),
     dmc.Text("What This Is", style={"fontSize": 28}, weight=500),
     dmc.Text("This application is meant to help provide meaningful insights about interactions users had with "
-             "people on the Hinge dating app. Hinge allows users to request an export of their personal data that was "
+             "people on the Hinge dating app."),
+    dmc.Space(h=20),
+    dmc.Text("Hinge allows users to request an export of their personal data that was "
              "collected while they were using the app. If you have a Hinge account, you can request your data by going "
              "to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and "
-             "once the data are ready, Hinge emails you a `.zip` file with your personal data."),
+             "once the data are ready, Hinge provides a `.zip` file with your personal data."),
     dmc.Space(h=20),
     dmc.Text("The data export provided by Hinge contains several files, but the main thing is the `index.html` file, "
              "which is used to render a webpage with tabs showing different data. The tabs provided by Hinge are "
@@ -48,26 +50,35 @@ app.layout = html.Div([
              "viewing changes to your prompts or seeing which pictures you've uploaded, these data are not "
              "particularly useful, especially the Matches tab, which is the most disappointing. The Matches tab "
              "contains a list of `matches`, but I actually refer to them as `interactions` in this project because "
-             "not all of them are true matches- some are just likes or unmatches. Needless to say the export provided "
-             "by Hinge leaves a lot to be desired, which is why I decided to build this project to analyze and "
+             "not all of them are true matches- some are just unrequited likes or unmatches. Needless to say the export "
+             "provided by Hinge leaves a lot to be desired, which is why I decided to build this project to analyze and "
              "visualize interesting insights from the Hinge data export."),
     dmc.Space(h=20),
     dmc.Text("How It Works", style={"fontSize": 28}, weight=500),
+    dmc.Text("After you get an email from Hinge saying your data export is complete, go to the app and download the "
+             "export. Navigate to where the export was downloaded and open the `.zip` file. From here you should see a "
+             "file called `matches.json`, which you can upload for analysis. Note, I am not saving any of the uploaded "
+             "data, all analyses are calculated at runtime."),
+    dmc.Space(h=20),
+    # TODO: this is where the file upload will go
+    dmc.Text("File Upload", size="xl"),
+    dmc.Text("Under construction..."),
 
+    dmc.Space(h=20),
     dmc.Text("Caveats", size="xl"),
     dmc.Text("1. Hinge does not provide any documentation about the data in the export so this analysis is based off my"
-             " own inferences from working with the data."),
+             " own inferences from working with the data"),
     dmc.Text("2. Hinge occasionally updates and modifies the data they send in the export, which may or may not make "
-             "aspects of this analysis obsolete or cause it to break."),
+             "aspects of this analysis obsolete or cause it to break"),
     dmc.Space(h=20),
     dmc.Text("Assumptions", size="xl"),
     dmc.Text("Since there is no documentation provided by Hinge, here are some assumptions I am making about the data "
              "in the export: "),
-    dmc.Text("1. Unmatches, or `blocks` as Hinge refers to them in the data, could go either direction, meaning you "
+    dmc.Text("1. Unmatches, or `blocks` as Hinge refers to them, could go either direction, meaning you "
              "could have unmatched the other person or they could have unmatched you. Hinge does not include any "
-             "additional data in these events to tell who unmatched who."),
-    dmc.Text("2. Matches without a like in the same event mean that someone liked you first, and you matched with them"
-             " (i.e. they liked you first)"),
+             "additional data in these events to tell who unmatched who"),
+    dmc.Text("2. Matches without a like in the same event mean that someone liked you first, and you chose to match "
+             "with them (i.e. they liked you first)"),
     dmc.Space(h=30),
     dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
 
@@ -126,11 +137,12 @@ app.layout = html.Div([
     dcc.Graph(figure=px.histogram(chat_counts, x='outgoing_messages', nbins=50).update_layout(bargap=0.2)),
 
 
-    dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
+    # TODO: figure out what to do with this
+    # dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
                 # hover_data=["airport", "city", "state", "cnt"],
                 # color="cnt",
                 # color_continuous_scale=px.colors.cyclical.IceFire,
-                projection="orthographic"))
+                # projection="orthographic"))
 ])
 
 

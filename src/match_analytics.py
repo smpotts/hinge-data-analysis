@@ -1,13 +1,17 @@
 import pandas as pd
 import re
-import utils.data_utility as du
+import src.data_utility as du
 
 
 # capture normalized events
 events = du.load_match_data()
+'''
+cliffy's notes
+- default params for these things
+- TESTS, so if you're passing in a little dataset then these should be pretty easy to get under test
+'''
 
-
-def date_count_distribution():
+def date_count_distribution(events=du.load_match_data()):
     # grab 'chat' events
     chats_df = events[events["type"] == "chats"]
 
@@ -20,7 +24,7 @@ def date_count_distribution():
     return interaction_counts
 
 
-def activity_by_date():
+def activity_by_date(events=du.load_match_data()):
     """
     Adds a date field to the normalized_events DataFrame and calculates counts of activity_type
     by day.

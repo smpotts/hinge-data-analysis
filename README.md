@@ -1,5 +1,5 @@
 ## Overview
-Hinge allows users to request an export of their personal data that was collected while they were using the app. If you have a Hinge account, you can request your data by going to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and once the data are ready, Hinge emails you a `.zip` file with your personal data.
+Hinge allows users to request an export of their personal data that was collected while they were using the app. If you have a Hinge account, you can request your data by going to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and once the data are ready, Hinge provides a `.zip` file with your personal data.
 
 ### The Data Export Provided by Hinge
 The data export provided by Hinge contains several files, but the main thing is the `index.html` file, which is used to render a web page with tabs showing different data. The tabs provided by Hinge are labeled: User, Matches, Prompts, Media, Subscriptions, Fresh Starts, and Selfie Verification. Aside from viewing changes to your prompts or seeing which pictures you've uploaded, these data are not particularly useful, especially on the Matches tab which should be the most interesting part.

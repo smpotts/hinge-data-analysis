@@ -8,28 +8,31 @@ import plotly.express as px
 from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
 import src.match_analytics as ma
+import src.data_utility as du
+import src.user_analytics as ua
+
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
+normalized_events = du.load_match_data()
 # persist DataFrame with total counts
-totals_df = ma.total_counts()
+totals_df = ma.total_counts(normalized_events)
 # get the breakdown of single vs double likes given just the normalized events that are 'likes'
-like_freq_df = ma.analyze_double_likes()
+like_freq_df = ma.analyze_double_likes(normalized_events)
 # counts of likes with and without comments
-like_w_wo_comments_df = ma.like_comment_ratios()
+like_w_wo_comments_df = ma.like_comment_ratios(normalized_events)
 # capture action types per day
-action_type_freq_per_day = ma.activity_by_date()
+action_type_freq_per_day = ma.activity_by_date(normalized_events)
 # get ratio of phone number shares
-number_shares = ma.phone_number_shares()
+number_shares = ma.phone_number_shares(normalized_events)
 # save commented outgoing likes
-commented_likes = ma.commented_outgoing_likes()
+commented_likes = ma.commented_outgoing_likes(normalized_events)
 # counts of message per chat
-chat_counts = ma.date_count_distribution()
-
-# TODO: commenting this out for now because it's so slow
-# user_coords = ua.parse_user_ip_addresses()
+chat_counts = ma.date_count_distribution(normalized_events)
+# user latitude and longitude coordinates
+user_coords = ua.parse_user_ip_addresses()
 
 
 app.layout = html.Div([
@@ -51,19 +54,12 @@ app.layout = html.Div([
              "particularly useful, especially the Matches tab, which is the most disappointing. The Matches tab "
              "contains a list of `matches`, but I actually refer to them as `interactions` in this project because "
              "not all of them are true matches- some are just unrequited likes or unmatches. Needless to say the export "
-             "provided by Hinge leaves a lot to be desired, which is why I decided to build this project to analyze and "
-             "visualize interesting insights from the Hinge data export."),
+             "provided by Hinge leaves a lot to be desired, so this project is meant to provide more insights."),
     dmc.Space(h=20),
     dmc.Text("How It Works", style={"fontSize": 28}, weight=500),
     dmc.Text("After you get an email from Hinge saying your data export is complete, go to the app and download the "
-             "export. Navigate to where the export was downloaded and open the `.zip` file. From here you should see a "
-             "file called `matches.json`, which you can upload for analysis. Note, I am not saving any of the uploaded "
-             "data, all analyses are calculated at runtime."),
-    dmc.Space(h=20),
-    # TODO: this is where the file upload will go
-    dmc.Text("File Upload", size="xl"),
-    dmc.Text("Under construction..."),
-
+             "export. Navigate to where the export was downloaded and open the `.zip` file. From here you should see "
+             "the `matches.json` file and the `user.json` file which can be used for this analysis."),
     dmc.Space(h=20),
     dmc.Text("Caveats", size="xl"),
     dmc.Text("1. Hinge does not provide any documentation about the data in the export so this analysis is based off my"
@@ -80,15 +76,14 @@ app.layout = html.Div([
     dmc.Text("2. Matches without a like in the same event mean that someone liked you first, and you chose to match "
              "with them (i.e. they liked you first)"),
     dmc.Space(h=30),
-    dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
 
+    dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
     dmc.Space(h=20),
     # funnel graph showing breakdown of interactions
     dmc.Text("Interaction Funnel", size="xl", align="center", weight=500),
     dmc.Text("This funnel represents the funnel of your interactions with people on Hinge. The outermost layer "
-             "represents the total number of interactions you had (outgoing likes, incoming likes, and people blocked "
-             "from the deck. Then it shows the number of outgoing likes sent, matches received, and conversations "
-             "started from those matches.", align="center"),
+             "represents the total number of people you interacted with. Then it shows the number of outgoing likes "
+             "you sent, matches received, and conversations started from those matches.", align="center"),
     dcc.Graph(figure=px.funnel(totals_df, x=totals_df["count"], y=totals_df["action_type"])),
 
     # side by side pie charts drilling into specifics of outgoing likes
@@ -109,6 +104,7 @@ app.layout = html.Div([
         ]),
     ]),
 
+    # table showing like comments
     dmc.Text("What You're Commenting When You Like Someone's Content", size="md", align="left"),
     dash_table.DataTable(data=commented_likes.to_dict('records'), page_size=10, style_cell={'textAlign': 'left'}),
 
@@ -136,17 +132,14 @@ app.layout = html.Div([
              align="center"),
     dcc.Graph(figure=px.histogram(chat_counts, x='outgoing_messages', nbins=50).update_layout(bargap=0.2)),
 
-
-    # TODO: figure out what to do with this
-    # dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
-                # hover_data=["airport", "city", "state", "cnt"],
-                # color="cnt",
-                # color_continuous_scale=px.colors.cyclical.IceFire,
-                # projection="orthographic"))
+    dmc.Text("Where you've used the app", size="xl", align="center", weight=500),
+    dmc.Text("This takes the public IP addresses from the sessions where you used Hinge and uses that to look up the "
+             "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
+             "to 100 sessions."),
+    dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
+                projection="orthographic"))
 ])
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # user_coords = ua.parse_user_ip_addresses()
-    # print(user_coords)

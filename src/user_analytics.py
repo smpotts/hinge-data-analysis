@@ -3,13 +3,13 @@ import json
 import pandas as pd
 
 
-def parse_user_ip_addresses():
+def parse_user_ip_addresses(file_path='data/export/user.json'):
     """
     Parses the IP addresses out of  the user data and gets latitude and longitude coordinates from the IP addresses.
     This is only grabbing a subset of the IP addresses because the full set of data takes too long.
     :return: a DataFrame with latitude and longitude coordinates
     """
-    json_file_path = 'data/export/user.json'
+    json_file_path = file_path
 
     # opening json file
     with open(json_file_path, 'r') as file:

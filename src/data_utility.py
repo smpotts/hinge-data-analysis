@@ -4,12 +4,12 @@ from pathlib import Path
 import requests
 
 
-def load_match_data():
+def load_match_data(file_path='data/export/matches.json'):
     """
     Loads the matches.json file provided by Hinge through the Data Export request
     :return: a DataFrame of normalized match event data
     """
-    json_file_path = 'data/export/matches.json'
+    json_file_path = file_path
 
     # opening json file
     with open(json_file_path, 'r') as file:

@@ -1,13 +1,13 @@
 import pandas as pd
 import re
-import utils.data_utility as du
 
 
-# capture normalized events
-events = du.load_match_data()
-
-
-def date_count_distribution():
+def date_count_distribution(events):
+    """
+    Captures how many outgoing messages were sent in each chat event.
+    :param events: a DataFrame of normalized events
+    :return: a DataFrame with counts of messages for each interaction
+    """
     # grab 'chat' events
     chats_df = events[events["type"] == "chats"]
 
@@ -20,11 +20,11 @@ def date_count_distribution():
     return interaction_counts
 
 
-def activity_by_date():
+def activity_by_date(events):
     """
     Adds a date field to the normalized_events DataFrame and calculates counts of activity_type
     by day.
-    :param df: a DataFrame of normalized events
+    :param events: a DataFrame of normalized events
     :return: a DataFrame containing counts for each activity_type by day
     """
     # add a new column that has the date the activity occurred
@@ -40,10 +40,10 @@ def activity_by_date():
     return action_type_freq_per_day
 
 
-def analyze_double_likes():
+def analyze_double_likes(events):
     """
     Analyzes counts of people who have received just one like, and people who have received more than one outgoing like.
-    :param df: a DataFrame of normalized events
+    :param events: a DataFrame of normalized events
     :return: a DataFrame with statistics about how many people have received one or more than one outgoing like
     """
     # grab 'like' events
@@ -62,10 +62,10 @@ def analyze_double_likes():
     return single_vs_double_likes
 
 
-def total_counts():
+def total_counts(events):
     """
     Counts the total number of occurrences for each action_type.
-    :param df: the DataFrame to analyze
+    :param events: a DataFrame of normalized events
     :return: a DataFrame of total count of occurrences for each action type
     """
     # get counts of each of the different action types
@@ -85,30 +85,41 @@ def total_counts():
     return totals
 
 
-def commented_outgoing_likes():
-    # TODO: this part of the method is a duplicate of like_comment_ratios
+def build_comments_list(events):
+    """
+    Helper method that extracts like events where there was an outgoing comment.
+    :param events: a DataFrame with normalized events
+    :return: a list of comments
+    """
     likes_w_comments = []
     likes = events["like"].dropna()
     for value in likes:
         record = value[0]
         if record.get('comment') is not None:
             likes_w_comments.append(record.get('comment'))
+
+    return likes_w_comments
+
+
+def commented_outgoing_likes(events):
+    """
+    Creates a DataFrame containing like events where a comment was left.
+    :param events: a DataFrame of normalized events
+    :return: a DataFrame with like events where a comment was left
+    """
+    # grab like events with comments
+    likes_w_comments = build_comments_list(events)
 
     return pd.DataFrame(likes_w_comments, columns=["Comments"])
 
 
-def like_comment_ratios():
+def like_comment_ratios(events):
     """
     Gathers statistics about how many outgoing likes included a comment.
-    :param df: a DataFrame of normalized events
+    :param events: a DataFrame of normalized events
     :return: a DataFrame with statistics about likes with and without comments
     """
-    likes_w_comments = []
-    likes = events["like"].dropna()
-    for value in likes:
-        record = value[0]
-        if record.get('comment') is not None:
-            likes_w_comments.append(record.get('comment'))
+    likes_w_comments = build_comments_list(events)
     likes_wo_comment = len(events) - len(likes_w_comments)
 
     likes_w_wo_comments = pd.DataFrame(
@@ -117,7 +128,12 @@ def like_comment_ratios():
     return likes_w_wo_comments
 
 
-def phone_number_shares():
+def phone_number_shares(events):
+    """
+    Captures interactions where a phone number was shared.
+    :param events: a DataFrame of normalized events
+    :return: a DataFrame with ratios of phone number shares
+    """
     # creating a filter to use in the where clause
     where_clause = events["type"] == "chats"
 
@@ -137,7 +153,7 @@ def phone_number_shares():
         if len(result) >= 1:
             gave_number.append(result)
 
+    # capture ratios of interactions with and without phone number shares
     number_shares = pd.DataFrame([['Gave Phone Number', len(gave_number)], ['Did Not Give Phone Number', total_chats]],
                                  columns=["Message Outcomes", "Count"])
-
     return number_shares

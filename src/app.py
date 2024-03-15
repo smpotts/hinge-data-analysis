@@ -5,17 +5,30 @@ __author__ = "Shelby Potts"
 __version__ = "0.0.0"
 
 import plotly.express as px
-from dash import Dash, html, dash_table, dcc
 import dash_mantine_components as dmc
+from flask import Flask, send_from_directory
+from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
+import base64
+
 import src.match_analytics as ma
 import src.data_utility as du
 import src.user_analytics as ua
+import os
 
+# define the directory where uploaded files will be stored
+UPLOAD_DIRECTORY = "app_uploaded_files"
 
-# Initialize the app - incorporate a Dash Mantine theme
+if not os.path.exists(UPLOAD_DIRECTORY):
+    os.makedirs(UPLOAD_DIRECTORY)  # , mode=0o777)
+
+# initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+server = Flask(__name__)
+app = Dash(__name__, server=server, external_stylesheets=external_stylesheets)
 
+####################
+### Initialize Data
+####################
 normalized_events = du.load_match_data()
 # persist DataFrame with total counts
 totals_df = ma.total_counts(normalized_events)
@@ -31,11 +44,25 @@ number_shares = ma.phone_number_shares(normalized_events)
 commented_likes = ma.commented_outgoing_likes(normalized_events)
 # counts of message per chat
 chat_counts = ma.date_count_distribution(normalized_events)
+
+
 # user latitude and longitude coordinates
-user_coords = ua.parse_user_ip_addresses()
+# TODO: fix me
+# user_coords = ua.parse_user_ip_addresses()
+
+
+@server.route("/download/<path:path>")
+def download(path):
+    """
+    Serve a file from the upload directory.
+    """
+    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
 
 
 app.layout = html.Div([
+    ####################
+    ### Informational Section
+    ####################
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
     dmc.Space(h=20),
     dmc.Text("What This Is", style={"fontSize": 28}, weight=500),
@@ -77,6 +104,33 @@ app.layout = html.Div([
              "with them (i.e. they liked you first)"),
     dmc.Space(h=30),
 
+    ####################
+    ### File I/O Section
+    ####################
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        },
+        # Allow multiple files to be uploaded
+        multiple=True
+    ),
+    html.Div(id='output-data-upload'),
+
+    ####################
+    ### Data Insights Section
+    ####################
     dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
     dmc.Space(h=20),
     # funnel graph showing breakdown of interactions
@@ -95,7 +149,7 @@ app.layout = html.Div([
     html.Div(className='row', children=[
         html.Div(className='six columns', children=[
             dcc.Graph(figure=px.pie(like_freq_df, values="Count", names="Like Frequency",
-                      title="Number of Outgoing Likes per Person"),
+                                    title="Number of Outgoing Likes per Person"),
                       style={'width': '50%', 'display': 'inline-block'}),
             dcc.Graph(figure=px.pie(like_w_wo_comments_df, values="Count", names="Likes With/ Without Comments",
                                     title="Outgoing Likes with Comments"),
@@ -136,9 +190,30 @@ app.layout = html.Div([
     dmc.Text("This takes the public IP addresses from the sessions where you used Hinge and uses that to look up the "
              "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
              "to 100 sessions."),
-    dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
-                projection="orthographic"))
+    # TODO: figure out what to do with this map because it's god awful to run
+    # dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
+    #             projection="orthographic"))
 ])
+
+
+def save_file(content, name):
+    """
+    Decode and store a file uploaded with Plotly Dash.
+    """
+    data = content.encode("utf8").split(b";base64,")[1]
+    with open(os.path.join(UPLOAD_DIRECTORY, name), "wb") as fp:
+        fp.write(base64.decodebytes(data))
+
+
+@callback(Output('output-data-upload', 'children'),
+          Input('upload-data', 'contents'),
+          State('upload-data', 'filename'))
+def update_output(list_of_contents, list_of_names):
+    if list_of_contents is not None:
+        children = [
+            save_file(c, n) for c, n in
+            zip(list_of_contents, list_of_names)]
+        return children
 
 
 if __name__ == '__main__':

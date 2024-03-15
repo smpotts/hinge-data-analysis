@@ -8,18 +8,12 @@ import plotly.express as px
 import dash_mantine_components as dmc
 from flask import Flask, send_from_directory
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
-import base64
 
 import src.match_analytics as ma
+import src.file_io as fio
 import src.data_utility as du
 import src.user_analytics as ua
-import os
 
-# define the directory where uploaded files will be stored
-UPLOAD_DIRECTORY = "app_uploaded_files"
-
-if not os.path.exists(UPLOAD_DIRECTORY):
-    os.makedirs(UPLOAD_DIRECTORY)  # , mode=0o777)
 
 # initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
@@ -47,16 +41,8 @@ chat_counts = ma.date_count_distribution(normalized_events)
 
 
 # user latitude and longitude coordinates
-# TODO: fix me
+# TODO: fix me...
 # user_coords = ua.parse_user_ip_addresses()
-
-
-@server.route("/download/<path:path>")
-def download(path):
-    """
-    Serve a file from the upload directory.
-    """
-    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
 
 
 app.layout = html.Div([
@@ -196,22 +182,13 @@ app.layout = html.Div([
 ])
 
 
-def save_file(content, name):
-    """
-    Decode and store a file uploaded with Plotly Dash.
-    """
-    data = content.encode("utf8").split(b";base64,")[1]
-    with open(os.path.join(UPLOAD_DIRECTORY, name), "wb") as fp:
-        fp.write(base64.decodebytes(data))
-
-
 @callback(Output('output-data-upload', 'children'),
           Input('upload-data', 'contents'),
           State('upload-data', 'filename'))
 def update_output(list_of_contents, list_of_names):
     if list_of_contents is not None:
         children = [
-            save_file(c, n) for c, n in
+            fio.save_file(c, n) for c, n in
             zip(list_of_contents, list_of_names)]
         return children
 

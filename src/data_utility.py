@@ -35,7 +35,7 @@ def liked_photos(df):
     :param df: DataFrame of normalized events
     """
     # create a folder for liked photos if it does not exist already
-    Path("data/liked_photos").mkdir(parents=True, exist_ok=True)
+    Path("../data/liked_photos").mkdir(parents=True, exist_ok=True)
 
     # get events that have content metadata
     content = df["content"].dropna()

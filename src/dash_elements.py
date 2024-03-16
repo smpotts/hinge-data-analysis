@@ -46,6 +46,9 @@ INTRO_INFO = html.Div([
     dmc.Space(h=30)])
 
 UPLOAD_FILES = html.Div([
+    dmc.Text("Upload Files", style={"fontSize": 28}, weight=500),
+    dmc.Text("Upload the `matches.json` and the `user.json` files from the zipped Hinge export for analysis."),
+    dmc.Space(h=20),
     dcc.Upload(
         id='upload-data',
         children=html.Div([

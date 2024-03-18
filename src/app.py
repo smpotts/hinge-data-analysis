@@ -53,18 +53,21 @@ app = Dash(__name__, server=server, use_pages=True, external_stylesheets=externa
 
 
 app.layout = html.Div([
+    # page title
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
-    dmc.Space(h=30),
-    html.Div([
-        html.Div(
-            dcc.Link(f"{page['name'].title()}", href=page["relative_path"], style={"fontSize": 28, 'font-family': "Open Sans, verdana, arial, sans-serif"})
-        ) for page in dash.page_registry.values()
-    ]),
 
     # informational info about the app
     de.INTRO_INFO,
     # section for uploading files
     de.UPLOAD_FILES,
+    de.PAGE_SWITCH_INFO,
+
+    html.Div([
+        html.Div(
+            dcc.Link(f"{page['name'].title()}", href=page["relative_path"],
+                     style={"fontSize": 20, 'font-family': "Open Sans, verdana, arial, sans-serif"})
+        ) for page in dash.page_registry.values()
+    ]),
 
     dash.page_container,
 

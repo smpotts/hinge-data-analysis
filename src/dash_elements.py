@@ -121,3 +121,10 @@ GEO_LOCATION = html.Div([
              "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
              "to 100 sessions."),
 ])
+
+PAGE_SWITCH_INFO = html.Div([
+    dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
+    dmc.Text("After uploading your data files, you can click on the 'Matches' and 'User' links below to see insights "
+             "from the data provided by Hinge."),
+    dmc.Space(h=20),
+])

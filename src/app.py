@@ -60,15 +60,21 @@ app.layout = html.Div([
     de.INTRO_INFO,
     # section for uploading files
     de.UPLOAD_FILES,
-    de.PAGE_SWITCH_INFO,
 
+    # shows links to the other pages
+    dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
+    dmc.Text("After uploading your data files, you can click on the page links below to see insights "
+             "from the data provided by Hinge."),
+    dmc.Space(h=10),
     html.Div([
         html.Div(
             dcc.Link(f"{page['name'].title()}", href=page["relative_path"],
                      style={"fontSize": 20, 'font-family': "Open Sans, verdana, arial, sans-serif"})
         ) for page in dash.page_registry.values()
     ]),
+    dmc.Space(h=20),
 
+    # container for multi-page setup
     dash.page_container,
 
     ####################

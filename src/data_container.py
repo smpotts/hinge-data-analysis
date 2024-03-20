@@ -1,15 +1,14 @@
-import pandas as pd
+from src.events import Events
+
+global containerized_events
+containerized_events = Events()
 
 
-global normalized_events
-normalized_events = pd.DataFrame()
+def set_containerized_events(events):
+    global containerized_events
+    containerized_events = events
 
 
-def set_normalized_events(norm):
-    global normalized_events
-    normalized_events = norm
-
-
-def get_normalized_events():
-    global normalized_events
-    return normalized_events
+def get_containerized_events():
+    global containerized_events
+    return containerized_events

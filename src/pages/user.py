@@ -1,8 +1,7 @@
-import dash
 from dash import html
 import dash_mantine_components as dmc
 
-dash.register_page(__name__)
+# user_coordinates = ua.parse_user_ip_addresses()
 
 layout = html.Div([
     dmc.Text("User Analytics", style={"fontSize": 28}, weight=500),
@@ -15,6 +14,6 @@ layout = html.Div([
              "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
              "to 100 sessions."),
     # TODO: figure out what to do with this map because it's god awful to run
-    # dcc.Graph(figure=px.scatter_geo(user_coords, locationmode="USA-states", lat="latitude", lon="longitude",
+    # dcc.Graph(figure=px.scatter_geo(user_coordinates, locationmode="USA-states", lat="latitude", lon="longitude",
     #             projection="orthographic"))
 ])

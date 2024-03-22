@@ -13,10 +13,9 @@ import base64
 
 import src.pages.matches as matches
 import src.pages.user as user
+import src.pages.home as home
 
 # define the directory where uploaded files will be stored
-# from src.events import Events
-
 UPLOAD_DIRECTORY = "../data/app_uploaded_files"
 
 # initialize the app - incorporate a Dash Mantine theme
@@ -24,7 +23,7 @@ external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 server = Flask(__name__)
 app = Dash(__name__, server=server, use_pages=True, external_stylesheets=external_stylesheets)
 
-dash.register_page("home", path='/')
+dash.register_page("home", path='/', layout=home.layout)
 dash.register_page("matches", path='/matches', layout=matches.layout)
 dash.register_page("user", path='/user', layout=user.layout)
 
@@ -158,8 +157,6 @@ def parse_contents(list_of_contents, list_of_names):
 def update_output(list_of_contents, list_of_names):
     if list_of_contents is not None:
         children = [
-            # TODO: ideally, this is where this goes but the underlying data is not refreshing when the file is uploaded
-            # kickoff_analytics(list_of_names),
             parse_contents(list_of_contents, list_of_names)]
         return children
 

@@ -1,6 +1,6 @@
 from dash import html
 import dash_mantine_components as dmc
-from dash import dcc, dash_table, Input, Output, callback
+from dash import dcc, dash_table, Input, Output, State, callback
 import plotly.express as px
 import visdcc
 
@@ -8,37 +8,28 @@ import src.match_analytics as ma
 
 # TODO: open question, how do we cause a reload of the data when the user uploads a new file?
 normalized_events = ma.load_match_data("../data/mocked_data/matches.json")
-initial_load = True
+print(f"mocked events size: {normalized_events.size}")
 
 
 def reload_global_norm_events(path="../data/app_uploaded_files/matches.json"):
-
-    global initial_load
-    initial_load = False
-    print(f"inside the reload global norm, initial load: {initial_load}")
-
     global normalized_events
-    # set normalized events with data from the uploads file
-    young_fresh_events = ma.load_match_data(path)
-    # set the normalized events to the freshly reloaded events
-    normalized_events = young_fresh_events
+    # set fresh events with data from the uploads file
+    normalized_events = ma.load_match_data(path)
+    print(f"young fresh events size: {normalized_events.size}")
 
 
 def get_global_norm_events():
-    global normalized_events
     return normalized_events
 
 
+# TODO: what's happening is when the Refresh Page button is clicked, reload_global_norm_events() is called which changes
+# TODO: the value of normalized_events, but the layout is not being re-rendered with the new data.
 def serve_layout():
-    print(f"inside layout, initial load: {initial_load}")
-    if not initial_load:
-        print(f"inside if not initial load: {initial_load}")
-        reload_global_norm_events()
-
     return html.Div([
-        visdcc.Run_js('javascript'),
-        html.Button('Refresh Page', id='refresh-page'),
 
+        visdcc.Run_js('javascript'),
+        html.Button('Refresh Page', id='refresh-page', style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
+        dmc.Space(h=20),
 
         dmc.Text("Match Analytics", style={"fontSize": 28}, weight=500),
         dmc.Text("This section contains insights about the interactions (likes, matches, chats, and unmatches) you've "
@@ -50,7 +41,10 @@ def serve_layout():
         dmc.Text("This funnel represents the funnel of your interactions with people on Hinge. The outermost layer "
                  "represents the total number of people you interacted with. Then it shows the number of outgoing likes "
                  "you sent, matches received, and conversations started from those matches.", align="center"),
-        dcc.Graph(figure=px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+        # dcc.Graph(id='live-update-graph', figure={'data': [px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+        #                            y=ma.total_counts(normalized_events)["action_type"])]}),
+        dcc.Graph(id='live-update-graph',
+                  figure=px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
                                    y=ma.total_counts(normalized_events)["action_type"])),
 
         # side by side pie charts drilling into specifics of outgoing likes
@@ -107,12 +101,35 @@ def serve_layout():
 
 @callback(
     Output('javascript', 'run'),
-    [Input('refresh-page', 'n_clicks')])
+    [Input('refresh-page', 'n_clicks')]
+)
 def refresh_button_clicked(data):
     if data is not None:
         reload_global_norm_events()
+        # TODO: do we need this?
+        # this part is responsible for reloading the page
         return "location.reload();"
     return ''
+
+
+@callback(
+    Output('live-update-graph', 'figure'),
+    [Input('refresh-page', 'n_clicks')]
+)
+def update_graph_live(data):
+    if data is not None:
+        reload_global_norm_events()
+        fresh_events = get_global_norm_events()
+        print(f"inside update_graph_live, fresh events: {fresh_events.size}")
+        figure = px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
+                                   y=ma.total_counts(fresh_events)["action_type"])
+        return figure
+        # return {'data': [px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
+        #                            y=ma.total_counts(fresh_events)["action_type"])]}
+        # return dcc.Graph(
+        #              figure=px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
+        #                            y=ma.total_counts(fresh_events)["action_type"])
+        #              )
 
 
 # assign the layout to the layout variable defined above

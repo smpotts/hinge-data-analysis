@@ -54,7 +54,4 @@ Here are the different scenarios of interactions that occur in the data:
 |  | X |  | X | You received an incoming like, you liked the other person back, no messages were exchanged, and the match was removed |
 
 ## What's next
-I have a long list of enhancements that I want to do to the application to make it better. Here are some of the ones at the top of my list:
-1. Adding more unit tests and increasing test coverage
-2. Giving the users the ability to upload their files from the webpage
-3. Adding additional insights and visualizations to the dashboard
+I have a long list of enhancements that I want to do to the application to make it better. To see what's on deck, check out the [Projects](https://github.com/users/smpotts/projects/2) tab in the repo. 

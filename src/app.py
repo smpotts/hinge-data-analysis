@@ -82,8 +82,6 @@ app.layout = html.Div([
     html.Div([
         dmc.Text("Upload Files", style={"fontSize": 28}, weight=500),
         dmc.Text("Upload the `matches.json` and the `user.json` files from the zipped Hinge export for analysis."),
-        dmc.Text("This is not working at the moment... It uploads files and lists the files uploaded, but it is not "
-                 "refreshing the underlying data right now...", weight=500),
         dmc.Space(h=20),
         dcc.Upload(
             id='upload-data',

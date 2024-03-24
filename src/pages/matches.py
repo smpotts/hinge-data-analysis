@@ -129,24 +129,13 @@ def serve_layout():
 def update_graph_live(data):
     if data is None:
         raise PreventUpdate
-    # elif data is not None:
-        # reload_global_norm_events()
-        # fresh_events = get_global_norm_events()
-        # print(f"inside update_graph_live, fresh events: {fresh_events.size}")
-        # figure = px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
-        #                            y=ma.total_counts(fresh_events)["action_type"])
 
+    # initial setup of the global events
     setup_global_norm_events()
-    df = px.data.iris()  # iris is a pandas DataFrame
-    figure = px.scatter(df, x="sepal_width", y="sepal_length")
-
+    # create the funnel graph
+    figure = px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+                               y=ma.total_counts(normalized_events)["action_type"])
     return figure
-        # return {'data': [px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
-        #                            y=ma.total_counts(fresh_events)["action_type"])]}
-        # return dcc.Graph(
-        #              figure=px.funnel(ma.total_counts(fresh_events), x=ma.total_counts(fresh_events)["count"],
-        #                            y=ma.total_counts(fresh_events)["action_type"])
-        #              )
 
 
 # assign the layout to the layout variable defined above

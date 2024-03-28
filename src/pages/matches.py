@@ -49,13 +49,12 @@ def serve_layout():
             ]),
         ]),
 
-        # TODO: fix the table showing comments on likes
         # table showing like comments
-        # dmc.Text("What You're Commenting When You Like Someone's Content", size="md", align="left"),
-        # dash_table.DataTable(data=ma.commented_outgoing_likes(normalized_events).to_dict('records'), page_size=10,
-        #                      style_cell={'textAlign': 'left'}),
-        # dash_table.DataTable(id='live-datatable', page_size=10,
-        #                      style_cell={'textAlign': 'left'}),
+        dmc.Text("What You're Commenting When You Like Someone's Content", size="xl", align="center", weight=500),
+        html.Div([
+            dash_table.DataTable(id='datatable-interactivity'),
+            html.Div(id='datatable-interactivity-container'),
+        ]),
 
         # line chart showing activity type frequencies by day
         dmc.Text("Frequency of Action Types by Day", size="xl", align="center", weight=500),
@@ -167,17 +166,21 @@ def update_messages_per_chat_graph(data):
     return figure
 
 
-# @callback(
-#     Output('live-datatable', 'children'),
-#     [Input('refresh-page', 'n_clicks')]
-# )
-# def update_comment_table(data):
-#     if data is None:
-#         raise PreventUpdate
-#     setup_global_norm_events()
+@callback(
+    Output('datatable-interactivity-container', 'children'),
+    [Input('refresh-page', 'n_clicks')]
+)
+def update_comment_table(data):
+    # this prevents the page from throwing an error when trying to display the graphs before data is uploaded
+    if data is None:
+        raise PreventUpdate
+    setup_global_norm_events()
 #     # build the messages per chat graph
-#     data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
-#     return data
+    data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
+    return [
+        dash_table.DataTable(data=data, page_size=10,
+                             style_cell={'textAlign': 'left'})
+       ]
 
 
 # assign the layout to the layout variable defined above

@@ -27,9 +27,11 @@ Remove
 The list of Matches provided by Hinge leaves a lot to be desired, which is why I decided to build this project analyzing and visualizing interesting insights from the Hinge data export.
 
 ## How To Run The App
-At the moment, the program takes the `matches.json` file and the `user.json` files. The paths to these data export files default to a directory called `data/export`, so it would be easiest to create these folders in the repository and put the files in there. The file paths can also be overwritten by changing them in the `user_analytics.py` and `match_analytics.py` files where they are hardcoded for now. Once the files are in place, run the application. It takes a bit of time to load initially because of the API calls it's making to get latitude and longitude data.
+The application is a simple Dash Plotly application that runs on port `8050`. Start the application after installing project dependencies and open a browser window to localhost:8050.
 
-Once the app has started you can go to localhost:8050 in your browser to see the dashboard.
+The page will render with information about the app and instructions on how to use it. The page has two different tabs under the "Data Insights" section, which show match data or user data depending on which one is selected from the home page. Click on "Matches" or "Users" to show the information and graphs for either topic. The visualizations will initially show as blank graphs until a file has been upload and the "Reload Graphs" button has been clicked.
+
+The "Upload Files" section allows users to upload a `matches.json` or `user.json` file for analysis for either tab. At the moment, the program expects the file to be called `matches.json` or `user.json`, as they are in the export provided by Hinge. After a file has been selected, it should show the uploaded file name under the upload box. From here, click the "Reload Graphs" button to reload the graphs with the uploaded data.
 
 ## Caveats
 Hinge changes and updates the schema of the data export from time to time, and that may or may not break the current analysis code and make things obsolete. So far, I haven't experienced any schema changes that have broken my code, but I assume that over time, changes will occur and things will no longer work. I haven't found a way to stay up to date with their schema changes at this time.

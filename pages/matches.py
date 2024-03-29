@@ -4,13 +4,12 @@ from dash import dcc, dash_table, Input, Output, callback
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import src.match_analytics as ma
+import match_analytics as ma
 
 
 global normalized_events
 
 
-# TODO: fix this to load just the file just once
 def setup_global_norm_events(path="../data/app_uploaded_files/matches.json"):
     global normalized_events
     # set fresh events with data from the uploads file
@@ -175,7 +174,7 @@ def update_comment_table(data):
     if data is None:
         raise PreventUpdate
     setup_global_norm_events()
-#     # build the messages per chat graph
+    # build the messages per chat graph
     data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
     return [
         dash_table.DataTable(data=data, page_size=10,

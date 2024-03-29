@@ -11,9 +11,9 @@ from dash import Dash, dcc, html, Input, Output, State, callback
 import os
 import base64
 
-import src.pages.matches as matches
-import src.pages.user as user
-import src.pages.home as home
+import pages.matches as matches
+import pages.user as user
+import pages.home as home
 
 # define the directory where uploaded files will be stored
 UPLOAD_DIRECTORY = "../data/app_uploaded_files"

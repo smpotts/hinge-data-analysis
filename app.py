@@ -15,10 +15,8 @@ import pages.matches as matches
 import pages.user as user
 import pages.home as home
 
-# define the directory where uploaded files will be stored
-UPLOAD_DIRECTORY = "../data/app_uploaded_files"
+USER_FILE_UPLOAD_DIRECTORY = "../data/app_uploaded_files"
 
-# initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 server = Flask(__name__)
 app = Dash(__name__, server=server, use_pages=True, external_stylesheets=external_stylesheets)
@@ -28,7 +26,6 @@ dash.register_page("matches", path='/matches', layout=matches.layout)
 dash.register_page("user", path='/user', layout=user.layout)
 
 app.layout = html.Div([
-    # page title
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
 
     # informational info about the app
@@ -78,6 +75,7 @@ app.layout = html.Div([
             "2. Matches without a like in the same event mean that someone liked you first, and you chose to match "
             "with them (i.e. they liked you first)"),
         dmc.Space(h=30)]),
+
     # section for uploading files
     html.Div([
         dmc.Text("Upload Files", style={"fontSize": 28}, weight=500),
@@ -120,32 +118,27 @@ app.layout = html.Div([
     ]),
     dmc.Space(h=20),
 
-    # container for multi-page setup
+    # container element at the bottom of the page for multi-page setup
     dash.page_container,
 
 ])
 
 
-def parse_contents(list_of_contents, list_of_names):
-    """
-    Decode and store a file uploaded with Plotly Dash.
-    """
-    # create the upload directory if it doesn't exist
-    if not os.path.exists(UPLOAD_DIRECTORY):
-        os.makedirs(UPLOAD_DIRECTORY)
+def parse_uploaded_file_contents(list_of_file_contents, list_of_file_names):
+    if not os.path.exists(USER_FILE_UPLOAD_DIRECTORY):
+        os.makedirs(USER_FILE_UPLOAD_DIRECTORY)
 
-    for content, name in zip(list_of_contents, list_of_names):
-        data = content.encode("utf8").split(b";base64,")[1]
+    for file_content, file_name in zip(list_of_file_contents, list_of_file_names):
+        uploaded_file_data = file_content.encode("utf8").split(b";base64,")[1]
 
-        # write the file to the upload directory
-        with open(os.path.join(UPLOAD_DIRECTORY, name), "wb") as fp:
-            fp.write(base64.decodebytes(data))
+        with open(os.path.join(USER_FILE_UPLOAD_DIRECTORY, file_name), "wb") as uploaded_file:
+            uploaded_file.write(base64.decodebytes(uploaded_file_data))
 
-        # return an html list of the uploaded file names
+        # return an html Div of the uploaded file names to display to the user
         return html.Div([
             html.Div(
-                dmc.Text(name, style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"})
-            ) for name in list_of_names
+                dmc.Text(file_name, style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"})
+            ) for file_name in list_of_file_names
         ])
 
 
@@ -155,7 +148,7 @@ def parse_contents(list_of_contents, list_of_names):
 def update_output(list_of_contents, list_of_names):
     if list_of_contents is not None:
         children = [
-            parse_contents(list_of_contents, list_of_names)]
+            parse_uploaded_file_contents(list_of_contents, list_of_names)]
         return children
 
 

@@ -3,7 +3,7 @@ import re
 import json
 
 
-def load_match_data(file_path="../data/app_uploaded_files/matches.json"):
+def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.json"):
     """
     Loads the matches.json file provided by Hinge through the Data Export request
     :return: a DataFrame of normalized match event data

@@ -116,7 +116,8 @@ def update_action_types_graph(data):
     return px.line(ma.activity_by_date(normalized_events),
                              x=ma.activity_by_date(normalized_events)['activity_date'],
                              y=ma.activity_by_date(normalized_events)['count'],
-                             color=ma.activity_by_date(normalized_events)['type'])
+                             color=ma.activity_by_date(normalized_events)['type'],
+                             labels={'x': 'activity_date', 'y': 'count'})
 
 
 @callback(

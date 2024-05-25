@@ -10,12 +10,6 @@ import match_analytics as ma
 global normalized_events
 
 
-def setup_global_norm_events(path="../data/app_uploaded_files/matches.json"):
-    global normalized_events
-    # set fresh events with data from the uploads file
-    normalized_events = ma.load_match_data(path)
-
-
 def serve_layout():
     return html.Div([
         html.Button('Reload Graphs', id='refresh-page', style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
@@ -84,15 +78,10 @@ def serve_layout():
     [Input('refresh-page', 'n_clicks')]
 )
 def update_graph_live(data):
-    if data is None:
-        raise PreventUpdate
-
-    # initial setup of the global events
-    setup_global_norm_events()
-    # create the funnel graph
-    figure = px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
                                y=ma.total_counts(normalized_events)["action_type"])
-    return figure
 
 
 @callback(
@@ -100,13 +89,10 @@ def update_graph_live(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_double_likes_pie(data):
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the pie chart for double likes
-    figure = px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
                                 title="Number of Outgoing Likes per Person")
-    return figure
 
 
 @callback(
@@ -114,13 +100,10 @@ def update_double_likes_pie(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_commented_likes_pie(data):
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the pie chart for commented likes
-    figure = px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
                                 title="Outgoing Likes with Comments")
-    return figure
 
 
 @callback(
@@ -128,15 +111,12 @@ def update_commented_likes_pie(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_action_types_graph(data):
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the action types graph
-    figure = px.line(ma.activity_by_date(normalized_events),
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.line(ma.activity_by_date(normalized_events),
                              x=ma.activity_by_date(normalized_events)['activity_date'],
                              y=ma.activity_by_date(normalized_events)['count'],
                              color=ma.activity_by_date(normalized_events)['type'])
-    return figure
 
 
 @callback(
@@ -144,12 +124,9 @@ def update_action_types_graph(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_number_shares_graph(data):
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the phone number shares graph
-    figure = px.pie(ma.phone_number_shares(normalized_events), values="Count", names="Message Outcomes")
-    return figure
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.pie(ma.phone_number_shares(normalized_events), values="Count", names="Message Outcomes")
 
 
 @callback(
@@ -157,12 +134,9 @@ def update_number_shares_graph(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_messages_per_chat_graph(data):
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the messages per chat graph
-    figure = px.histogram(ma.date_count_distribution(normalized_events), x='outgoing_messages', nbins=50).update_layout(bargap=0.2)
-    return figure
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    return px.histogram(ma.date_count_distribution(normalized_events), x='outgoing_messages', nbins=50).update_layout(bargap=0.2)
 
 
 @callback(
@@ -170,17 +144,23 @@ def update_messages_per_chat_graph(data):
     [Input('refresh-page', 'n_clicks')]
 )
 def update_comment_table(data):
-    # this prevents the page from throwing an error when trying to display the graphs before data is uploaded
-    if data is None:
-        raise PreventUpdate
-    setup_global_norm_events()
-    # build the messages per chat graph
-    data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
+    __check_for_live_update_data(data)
+    __setup_global_norm_events()
+    commented_outgoing_likes_data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
     return [
-        dash_table.DataTable(data=data, page_size=10,
+        dash_table.DataTable(data=commented_outgoing_likes_data, page_size=10,
                              style_cell={'textAlign': 'left'})
        ]
 
 
-# assign the layout to the layout variable defined above
 layout = serve_layout()
+
+
+def __setup_global_norm_events(file_path="../data/app_uploaded_files/matches.json"):
+    global normalized_events
+    normalized_events = ma.prepare_uploaded_match_data(file_path)
+
+
+def __check_for_live_update_data(data):
+    if data is None:
+        raise PreventUpdate

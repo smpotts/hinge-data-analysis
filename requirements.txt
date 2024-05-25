@@ -29,10 +29,6 @@ croniter==2.0.1
 cryptography==36.0.1
 cssselect==1.2.0
 cycler==0.12.1
-dagster==1.5.14
-dagster-duckdb==0.21.14
-dagster-duckdb-pandas==0.21.14
-dagster-pipes==1.5.14
 dash==2.14.2
 dash-bootstrap-components==1.5.0
 dash-core-components==2.0.0

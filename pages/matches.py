@@ -10,9 +10,6 @@ import match_analytics as ma
 global normalized_events
 
 
-
-
-
 def serve_layout():
     return html.Div([
         html.Button('Reload Graphs', id='refresh-page', style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
@@ -83,10 +80,8 @@ def serve_layout():
 def update_graph_live(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-
-    figure = px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+    return px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
                                y=ma.total_counts(normalized_events)["action_type"])
-    return figure
 
 
 @callback(
@@ -96,10 +91,8 @@ def update_graph_live(data):
 def update_double_likes_pie(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-
-    figure = px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
+    return px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
                                 title="Number of Outgoing Likes per Person")
-    return figure
 
 
 @callback(
@@ -109,10 +102,8 @@ def update_double_likes_pie(data):
 def update_commented_likes_pie(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    # build the pie chart for commented likes
-    figure = px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
+    return px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
                                 title="Outgoing Likes with Comments")
-    return figure
 
 
 @callback(
@@ -155,10 +146,9 @@ def update_messages_per_chat_graph(data):
 def update_comment_table(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    # build the messages per chat graph
-    data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
+    commented_outgoing_likes_data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
     return [
-        dash_table.DataTable(data=data, page_size=10,
+        dash_table.DataTable(data=commented_outgoing_likes_data, page_size=10,
                              style_cell={'textAlign': 'left'})
        ]
 

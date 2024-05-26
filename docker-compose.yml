@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: hinge_analyzer_app
+    ports:
+      - "8050:8050"  # Map port 8050 of the host to port 8050 of the container
+    volumes:
+      - .:/usr/src/app  # Mount the current directory to the container for live changes
+    environment:
+      - PYTHONUNBUFFERED=1  # Optional: Ensure output is not buffered

@@ -27,7 +27,7 @@ Remove
 The list of Matches provided by Hinge leaves a lot to be desired, which is why I decided to build this project analyzing and visualizing interesting insights from the Hinge data export.
 
 ## How To Run The App
-The application is a multi-page Dash Plotly application that runs on port `8050`. Start the application after installing project dependencies and open a browser window to localhost:8050.
+The application is a multi page Dash Plotly application that runs in a Docker container on port `8050`. Create a Docker build image with: `docker compose build` and run the app with: `docker compose up -d`. The app will be available at [http://0.0.0.0:8050/](http://0.0.0.0:8050/). To bring the container down, use `docker compose down`.  
 
 The page will render with information about the app and instructions on how to use it. 
 

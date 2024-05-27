@@ -36,3 +36,11 @@ def parse_user_ip_addresses(file_path='data/export/user.json'):
     # define column names and create a DataFrame
     coordinates = pd.DataFrame({'latitude': lats, 'longitude': longs})
     return coordinates
+
+
+def __validate_user_file_upload(file_path):
+    if not file_path.endswith('.json'):
+        raise ValueError("Invalid file type. Please upload a JSON file.")
+
+    if 'user' not in file_path:
+        raise ValueError("Invalid file. Please upload a user file.")

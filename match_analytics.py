@@ -4,6 +4,7 @@ import json
 
 
 def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.json"):
+    __validate_match_file_upload(file_path)
     with open(file_path, 'r') as file:
         # match upload data is a list of dictionaries
         match_upload_data = json.load(file)
@@ -63,7 +64,8 @@ def total_counts(events):
     chat_event_count = len(chat_events.interaction_id.unique())
 
     totals = pd.DataFrame(
-        [['Distinct Interactions', distinct_interaction_count], ['Outgoing Likes', like_event_count], ['Matches', match_event_count],
+        [['Distinct Interactions', distinct_interaction_count], ['Outgoing Likes', like_event_count],
+         ['Matches', match_event_count],
          ['Chats', chat_event_count]],
         columns=["action_type", "count"])
     return totals
@@ -102,7 +104,7 @@ def phone_number_shares(events):
 
     phone_number_share_ratios = pd.DataFrame([['Gave Phone Number', len(phone_number_shared)],
                                               ['Did Not Give Phone Number', total_messages_w_chats]],
-                                 columns=["Message Outcomes", "Count"])
+                                             columns=["Message Outcomes", "Count"])
     return phone_number_share_ratios
 
 
@@ -117,3 +119,11 @@ def __build_comments_list(events):
             likes_w_comments.append(like_event.get('comment'))
 
     return likes_w_comments
+
+
+def __validate_match_file_upload(file_path):
+    if not file_path.endswith('.json'):
+        raise ValueError("Invalid file type. Please upload a JSON file.")
+
+    if 'match' not in file_path:
+        raise ValueError("Invalid file. Please upload a match file.")

@@ -1,13 +1,16 @@
 ## [Summary]()
-Provide a brief summary of the changes in this PR and link to the relevant issue(s) if applicable.
+*Provide a brief summary of the changes in this PR and link to the relevant issue(s) if applicable.*
+
 
 
 ### Current Behavior
-Please describe the current behavior that you are modifying.
+*Please describe the current behavior that you are modifying.*
+
 
 
 ### New Behavior
-Please describe the behavior or changes that are being added by this PR.
+*Please describe the behavior or changes that are being added by this PR.*
+
 
 
 #### Does this new change introduce a breaking change?
@@ -24,5 +27,5 @@ If this introduces a breaking change:
 
 
 ### Other Information
-Any other information that is useful to note: visual changes, dependency changes, etc.
+*Any other information that is useful to note: visual changes, dependency changes, etc.*
 

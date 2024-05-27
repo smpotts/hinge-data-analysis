@@ -1,7 +1,7 @@
 import unittest
 import match_analytics as ma
 
-test_events = ma.prepare_uploaded_match_data('test_data/test_matches.json')
+test_events = ma.prepare_uploaded_match_data('../test_data/test_matches.json')
 
 
 class MatchAnalyticsTest(unittest.TestCase):

@@ -1,7 +1,8 @@
+import os
 import unittest
 import match_analytics as ma
 
-test_events = ma.prepare_uploaded_match_data('test_matches.json')
+test_events = ma.prepare_uploaded_match_data('tests/test_matches.json')
 
 
 class MatchAnalyticsTest(unittest.TestCase):
@@ -11,11 +12,11 @@ class MatchAnalyticsTest(unittest.TestCase):
 
     def test_invalid_file_type(self):
         with self.assertRaises(ValueError):
-            ma.prepare_uploaded_match_data('test_matches.csv')
+            ma.prepare_uploaded_match_data('tests/test_matches.csv')
 
     def test_invalid_file_name(self):
         with self.assertRaises(ValueError):
-            ma.prepare_uploaded_match_data('invalid_file.json')
+            ma.prepare_uploaded_match_data('tests/invalid_file.json')
 
 
 if __name__ == '__main__':

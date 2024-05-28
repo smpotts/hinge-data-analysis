@@ -127,3 +127,14 @@ def __validate_match_file_upload(file_path):
 
     if 'match' not in file_path:
         raise ValueError("Invalid file. Please upload a match file.")
+
+
+def __import_user_data_by_key(file_path, key):
+    with open(file_path, 'r') as file:
+        raw_user_data = json.load(file)
+
+    user_data = []
+    if key in raw_user_data:
+        user_data = raw_user_data[key]
+
+    return user_data

@@ -1,7 +1,7 @@
 import unittest
 import analytics
 
-test_events = analytics.prepare_uploaded_match_data('test_matches.json')
+test_events = analytics.prepare_uploaded_match_data('tests/test_matches.json')
 
 
 class MatchAnalyticsTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class MatchAnalyticsTest(unittest.TestCase):
             analytics.prepare_uploaded_match_data('tests/invalid_file.json')
 
     def test_account_data_import(self):
-        results = analytics.import_user_account_data('test_user.json')
+        results = analytics.import_user_account_data('tests/test_user.json')
         self.assertEqual(len(results), 9) # 9 keys in the dictionary
 
 

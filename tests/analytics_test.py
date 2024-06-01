@@ -17,6 +17,10 @@ class MatchAnalyticsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             analytics.prepare_uploaded_match_data('tests/invalid_file.json')
 
+    def test_account_data_import(self):
+        results = analytics.import_user_account_data()
+        self.assertEqual(results.size, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,15 +12,15 @@ layout = html.Div([
     html.Button('Reload Graphs', id='refresh-page',
                 style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
     dmc.Space(h=20),
-    dmc.Text("User Analytics", style={"fontSize": 28}, weight=500),
+    dmc.Text("User Analytics", align="center", style={"fontSize": 28}, weight=500),
     dmc.Text("This section contains insights about your user data that was collected while you were using Hinge."),
     dmc.Space(h=20),
 
     # table showing account data
-    dmc.Text("User Account Info", size="xl", align="center", weight=500),
+    dmc.Text("User Account Info", size="xl", align="left", weight=500),
     dmc.Text("This table shows the account data that was collected while you were using Hinge. This includes data "
              "about when you downloaded the app, the last time you paused or unpaused the app, and the last time "
-             "you logged in.", align="center"),
+             "you logged in.", align="left"),
     dmc.Space(h=10),
     html.Div([
         dash_table.DataTable(id='datatable-interactivity'),
@@ -29,10 +29,10 @@ layout = html.Div([
 
     dmc.Space(h=20),
     # user latitude and longitude coordinates
-    dmc.Text("Where you've used the app", size="xl", align="center", weight=500),
+    dmc.Text("Where you've used the app", size="xl", align="left", weight=500),
     dmc.Text("This takes the public IP addresses from the sessions where you used Hinge and uses that to look up the "
              "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
-             "to 100 sessions.", align="center"),
+             "to 100 sessions.", align="left"),
     # TODO: figure out what to do with this map because it's god awful to run
     dcc.Graph("live-update-coords-graph"),
 ])

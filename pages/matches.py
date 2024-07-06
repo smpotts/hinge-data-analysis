@@ -81,7 +81,8 @@ def update_graph_live(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
     return px.funnel(analytics.total_counts(normalized_events), x=analytics.total_counts(normalized_events)["count"],
-                               y=analytics.total_counts(normalized_events)["action_type"])
+                               y=analytics.total_counts(normalized_events)["action_type"],
+                               labels={'y': 'interaction count'})
 
 
 @callback(

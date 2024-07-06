@@ -18,7 +18,7 @@ class MatchAnalyticsTest(unittest.TestCase):
             analytics.prepare_uploaded_match_data('tests/invalid_file.json')
 
     def test_account_data_import(self):
-        results = analytics.import_user_account_data('tests/test_user.json')
+        results = analytics.import_user_account_data()
         self.assertEqual(len(results), 9) # 9 keys in the dictionary
 
 

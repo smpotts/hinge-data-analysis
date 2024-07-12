@@ -4,8 +4,7 @@ import json
 
 
 def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.json"):
-    # TODO: come back and fix this
-    # __validate_file_upload(file_path)
+    __validate_file_upload(file_path)
     with open(file_path, 'r') as file:
         # match upload data is a list of dictionaries
         match_upload_data = json.load(file)

@@ -121,13 +121,13 @@ def __build_comments_list(events):
     return likes_w_comments
 
 
-def import_user_account_data():
-    account_data = __import_user_data_by_key("account")
+def import_user_account_data(file_path="../data/app_uploaded_files/user.json"):
+    account_data = __import_user_data_by_key("account", file_path)
     return account_data
 
 
-def import_user_device_data():
-    device_data = __import_user_data_by_key("device")
+def import_user_device_data(file_path="../data/app_uploaded_files/user.json"):
+    device_data = __import_user_data_by_key("devices", file_path)
     return device_data
 
 
@@ -139,7 +139,7 @@ def __validate_match_file_upload(file_path):
         raise ValueError("Invalid file. Please upload a match file.")
 
 
-def __import_user_data_by_key(key, file_path="../data/app_uploaded_files/user.json"):
+def __import_user_data_by_key(key, file_path):
     with open(file_path, 'r') as file:
         raw_user_data = json.load(file)
 

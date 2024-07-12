@@ -135,8 +135,8 @@ def __validate_file_upload(file_path):
     if not file_path.endswith('.json'):
         raise ValueError("Invalid file type. Please upload a JSON file.")
 
-    if 'match' or 'user' not in file_path:
-        raise ValueError("Invalid file. Please upload a match or a user file.")
+    # if 'match' or 'user' not in file_path:
+    #     raise ValueError("Invalid file name. Please upload a match or a user file.")
 
 
 def __import_user_data_by_key(key, file_path):

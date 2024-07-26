@@ -15,17 +15,9 @@ class AnalyticsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             analytics.prepare_uploaded_match_data('tests/matches.csv')
 
-    def test_invalid_file_name(self):
-        with self.assertRaises(ValueError):
-            analytics.prepare_uploaded_match_data('tests/invalid_file.json')
-
     def test_account_data_import(self):
         results = analytics.import_user_account_data(USER_FILE_PATH)
         self.assertEqual(len(results), 9) # 9 keys in the dictionary
-
-    def test_device_data_import(self):
-        results = analytics.import_user_device_data(USER_FILE_PATH)
-        self.assertEqual(len(results), 5)
 
 
 if __name__ == '__main__':

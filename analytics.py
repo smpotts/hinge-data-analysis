@@ -4,7 +4,9 @@ import json
 
 
 def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.json"):
-    __validate_file_upload(file_path)
+    __validate_upload_file_type(file_path)
+    __validate_match_file_upload(file_path)
+
     with open(file_path, 'r') as file:
         # match upload data is a list of dictionaries
         match_upload_data = json.load(file)
@@ -131,12 +133,9 @@ def import_user_device_data(file_path="../data/app_uploaded_files/user.json"):
     return device_data
 
 
-def __validate_file_upload(file_path):
-    if not file_path.endswith('.json'):
-        raise ValueError("Invalid file type. Please upload a JSON file.")
-
-
 def __import_user_data_by_key(key, file_path):
+    __validate_upload_file_type(file_path)
+
     with open(file_path, 'r') as file:
         raw_user_data = json.load(file)
 
@@ -145,3 +144,13 @@ def __import_user_data_by_key(key, file_path):
         user_data = raw_user_data[key]
 
     return user_data
+
+
+def __validate_upload_file_type(file_path):
+    if not file_path.endswith('.json'):
+        raise ValueError("Invalid file type. Please upload a JSON file.")
+
+
+def __validate_match_file_upload(file_path):
+    if 'match' not in file_path:
+        raise ValueError("Invalid file name. Please upload a file with 'match' in the file name.")

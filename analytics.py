@@ -18,6 +18,7 @@ def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.js
             # action is the metadata assoc. one event of the action type
             for action in actions:
                 action["interaction_id"] = interaction
+                action["type"] = action_type
                 events.append(action)
 
     return pd.DataFrame(events).sort_values("timestamp")

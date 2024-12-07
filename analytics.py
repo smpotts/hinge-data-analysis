@@ -61,14 +61,17 @@ def total_counts(events):
     distinct_interaction_count = len(pd.unique(events['interaction_id']))
     like_event_count = len(events[events['type'] == "like"])
     match_event_count = len(events[events['type'] == "match"])
+    we_met_event_count = len(events[events['type'] == "we_met"])
 
     chat_events = events[events['type'] == "chats"]
     chat_event_count = len(chat_events.interaction_id.unique())
 
     totals = pd.DataFrame(
-        [['Distinct Interactions', distinct_interaction_count], ['Outgoing Likes', like_event_count],
+        [['Distinct Interactions', distinct_interaction_count], 
+         ['Outgoing Likes', like_event_count],
          ['Matches', match_event_count],
-         ['Chats', chat_event_count]],
+         ['Chats', chat_event_count],
+         ['We Met', we_met_event_count]],
         columns=["action_type", "count"])
     return totals
 

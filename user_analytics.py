@@ -1,4 +1,4 @@
-from ip2geotools.databases.noncommercial import DbIpCity
+# from ip2geotools.databases.noncommercial import DbIpCity
 import json
 import pandas as pd
 
@@ -28,10 +28,11 @@ def parse_user_ip_addresses(file_path='data/export/user.json'):
     lats = []
     longs = []
     # lookup the latitude and longitude coordinates of each IP address
-    for ip in ip_addresses[:100]:
-        coord = DbIpCity.get(ip, api_key="free")
-        lats.append(coord.latitude)
-        longs.append(coord.longitude)
+    # TODO: replace this with another library, there is an API limit and this takes way too long to load
+    # for ip in ip_addresses[:100]:
+    #     coord = DbIpCity.get(ip, api_key="free")
+    #     lats.append(coord.latitude)
+    #     longs.append(coord.longitude)
 
     # define column names and create a DataFrame
     coordinates = pd.DataFrame({'latitude': lats, 'longitude': longs})

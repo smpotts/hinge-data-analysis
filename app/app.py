@@ -11,9 +11,11 @@ from dash import Dash, dcc, html, Input, Output, State, callback
 import os
 import base64
 
-import pages.matches as matches
-import pages.user as user
-import pages.home as home
+import pages.MatchPage as MatchPage
+import pages.UserPage as UserPage
+import pages.HomePage as HomePage
+
+from tools.Logger import logger
 
 USER_FILE_UPLOAD_DIRECTORY = "../data/app_uploaded_files"
 
@@ -21,9 +23,9 @@ external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 server = Flask(__name__)
 app = Dash(__name__, server=server, use_pages=True, external_stylesheets=external_stylesheets)
 
-dash.register_page("home", path='/', layout=home.layout)
-dash.register_page("matches", path='/matches', layout=matches.layout)
-dash.register_page("user", path='/user', layout=user.layout)
+dash.register_page("home", path='/', layout=HomePage.layout)
+dash.register_page("matches", path='/matches', layout=MatchPage.layout)
+dash.register_page("user", path='/user', layout=UserPage.layout)
 
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),
@@ -153,4 +155,5 @@ def update_output(list_of_contents, list_of_names):
 
 
 if __name__ == '__main__':
+    logger.info("Starting the Dash Plotly app...")
     app.run(debug=True, host='0.0.0.0', port=8050)

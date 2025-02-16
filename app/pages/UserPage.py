@@ -4,8 +4,8 @@ from dash import dcc, Input, Output, callback, dash_table
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import analytics
-import user_analytics as ua
+import analytics.MatchAnalytics as MatchAnalytics
+import analytics.UserAnalytics as ua
 
 
 layout = html.Div([
@@ -45,7 +45,7 @@ layout = html.Div([
 def update_comment_table(data):
     __check_for_live_update_data(data)
 
-    account_data = analytics.import_user_account_data()
+    account_data = MatchAnalytics.import_user_account_data()
     # passing in the account data as a list for the DataTable
     return [
         dash_table.DataTable(data=[account_data], page_size=5,

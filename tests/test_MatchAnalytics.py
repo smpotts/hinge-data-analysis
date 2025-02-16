@@ -1,5 +1,5 @@
 import unittest
-import analytics
+import app.analytics.MatchAnalytics as MatchAnalytics
 
 USER_FILE_PATH = 'tests/test_user.json'
 MATCHES_FILE_PATH = 'tests/test_matches.json'
@@ -7,28 +7,28 @@ MATCHES_FILE_PATH = 'tests/test_matches.json'
 
 class AnalyticsTest(unittest.TestCase):
     def test_total_event_count(self):
-        test_events = analytics.prepare_uploaded_match_data(MATCHES_FILE_PATH)
-        total_events = analytics.total_counts(test_events)
+        test_events = MatchAnalytics.prepare_uploaded_match_data(MATCHES_FILE_PATH)
+        total_events = MatchAnalytics.total_counts(test_events)
         self.assertEqual(total_events.size, 8)
 
     def test_invalid_file_type(self):
         with self.assertRaises(ValueError):
-            analytics.prepare_uploaded_match_data('tests/matches.csv')
+            MatchAnalytics.prepare_uploaded_match_data('tests/matches.csv')
 
     def test_invalid_match_file_upload(self):
         with self.assertRaises(ValueError):
-            analytics.prepare_uploaded_match_data(USER_FILE_PATH)
+            MatchAnalytics.prepare_uploaded_match_data(USER_FILE_PATH)
 
     def test_invalid_user_file_upload(self):
         with self.assertRaises(ValueError):
-            analytics.import_user_account_data(MATCHES_FILE_PATH)
+            MatchAnalytics.import_user_account_data(MATCHES_FILE_PATH)
 
     def test_account_data_import(self):
-        results = analytics.import_user_account_data(USER_FILE_PATH)
+        results = MatchAnalytics.import_user_account_data(USER_FILE_PATH)
         self.assertEqual(len(results), 9) # 9 keys in the dictionary
 
     def test_device_data_import(self):
-        results = analytics.import_user_device_data(USER_FILE_PATH)
+        results = MatchAnalytics.import_user_device_data(USER_FILE_PATH)
         self.assertEqual(len(results), 5)
 
 

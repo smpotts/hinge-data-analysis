@@ -4,7 +4,7 @@ from dash import dcc, dash_table, Input, Output, callback
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import analytics.analytics as analytics
+import analytics.MatchAnalytics as ma
 
 
 global normalized_events
@@ -80,8 +80,8 @@ def serve_layout():
 def update_graph_live(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.funnel(analytics.total_counts(normalized_events), x=analytics.total_counts(normalized_events)["count"],
-                               y=analytics.total_counts(normalized_events)["action_type"],
+    return px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
+                               y=ma.total_counts(normalized_events)["action_type"],
                                labels={'y': 'interaction count'})
 
 
@@ -92,7 +92,7 @@ def update_graph_live(data):
 def update_double_likes_pie(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.pie(analytics.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
+    return px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
                                 title="Number of Outgoing Likes per Person")
 
 
@@ -103,7 +103,7 @@ def update_double_likes_pie(data):
 def update_commented_likes_pie(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.pie(analytics.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
+    return px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
                                 title="Outgoing Likes with Comments")
 
 
@@ -114,10 +114,10 @@ def update_commented_likes_pie(data):
 def update_action_types_graph(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.line(analytics.activity_by_date(normalized_events),
-                             x=analytics.activity_by_date(normalized_events)['activity_date'],
-                             y=analytics.activity_by_date(normalized_events)['count'],
-                             color=analytics.activity_by_date(normalized_events)['type'],
+    return px.line(ma.activity_by_date(normalized_events),
+                             x=ma.activity_by_date(normalized_events)['activity_date'],
+                             y=ma.activity_by_date(normalized_events)['count'],
+                             color=ma.activity_by_date(normalized_events)['type'],
                              labels={'x': 'activity_date', 'y': 'count'})
 
 
@@ -128,7 +128,7 @@ def update_action_types_graph(data):
 def update_number_shares_graph(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.pie(analytics.phone_number_shares(normalized_events), values="Count", names="Message Outcomes")
+    return px.pie(ma.phone_number_shares(normalized_events), values="Count", names="Message Outcomes")
 
 
 @callback(
@@ -138,7 +138,7 @@ def update_number_shares_graph(data):
 def update_messages_per_chat_graph(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    return px.histogram(analytics.date_count_distribution(normalized_events), x='outgoing_messages', nbins=50).update_layout(bargap=0.2)
+    return px.histogram(ma.date_count_distribution(normalized_events), x='outgoing_messages', nbins=50).update_layout(bargap=0.2)
 
 
 @callback(
@@ -148,7 +148,7 @@ def update_messages_per_chat_graph(data):
 def update_comment_table(data):
     __check_for_live_update_data(data)
     __setup_global_norm_events()
-    commented_outgoing_likes_data = analytics.commented_outgoing_likes(normalized_events).to_dict('records')
+    commented_outgoing_likes_data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
     return [
         dash_table.DataTable(data=commented_outgoing_likes_data, page_size=10,
                              style_cell={'textAlign': 'left'})
@@ -160,7 +160,7 @@ layout = serve_layout()
 
 def __setup_global_norm_events(file_path="../data/app_uploaded_files/matches.json"):
     global normalized_events
-    normalized_events = analytics.prepare_uploaded_match_data(file_path)
+    normalized_events = ma.prepare_uploaded_match_data(file_path)
 
 
 def __check_for_live_update_data(data):

@@ -11,9 +11,9 @@ from dash import Dash, dcc, html, Input, Output, State, callback
 import os
 import base64
 
-import pages.matches as matches
-import pages.user as user
-import pages.home as home
+import pages.MatchPage as MatchPage
+import pages.UserPage as UserPage
+import pages.HomePage as HomePage
 
 from tools.Logger import logger
 
@@ -23,9 +23,9 @@ external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 server = Flask(__name__)
 app = Dash(__name__, server=server, use_pages=True, external_stylesheets=external_stylesheets)
 
-dash.register_page("home", path='/', layout=home.layout)
-dash.register_page("matches", path='/matches', layout=matches.layout)
-dash.register_page("user", path='/user', layout=user.layout)
+dash.register_page("home", path='/', layout=HomePage.layout)
+dash.register_page("matches", path='/matches', layout=MatchPage.layout)
+dash.register_page("user", path='/user', layout=UserPage.layout)
 
 app.layout = html.Div([
     dmc.Title('Hinge Data Analysis', color="black", size="h1"),

@@ -1,6 +1,6 @@
 .idea/
 .DS_Store
 data/
-*/__pycache__/
+*__pycache__/
 *.pyc
 ./.pytest_cache

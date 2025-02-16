@@ -1,5 +1,5 @@
 import unittest
-import analytics
+import app.analytics.analytics as analytics
 
 USER_FILE_PATH = 'tests/test_user.json'
 MATCHES_FILE_PATH = 'tests/test_matches.json'

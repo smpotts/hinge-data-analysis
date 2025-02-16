@@ -4,8 +4,8 @@ from dash import dcc, Input, Output, callback, dash_table
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import analytics
-import user_analytics as ua
+import app.analytics.analytics as analytics
+import app.analytics.user_analytics as ua
 
 
 layout = html.Div([

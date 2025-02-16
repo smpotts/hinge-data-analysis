@@ -128,12 +128,14 @@ app.layout = html.Div([
 
 def parse_uploaded_file_contents(list_of_file_contents, list_of_file_names):
     if not os.path.exists(USER_FILE_UPLOAD_DIRECTORY):
+        logger.info(f"Creating the user file upload directory: {USER_FILE_UPLOAD_DIRECTORY}." )
         os.makedirs(USER_FILE_UPLOAD_DIRECTORY)
 
     for file_content, file_name in zip(list_of_file_contents, list_of_file_names):
         uploaded_file_data = file_content.encode("utf8").split(b";base64,")[1]
 
         with open(os.path.join(USER_FILE_UPLOAD_DIRECTORY, file_name), "wb") as uploaded_file:
+            logger.info(f"Writing file: {file_name}...")
             uploaded_file.write(base64.decodebytes(uploaded_file_data))
 
         # return an html Div of the uploaded file names to display to the user
@@ -155,5 +157,8 @@ def update_output(list_of_contents, list_of_names):
 
 
 if __name__ == '__main__':
-    logger.info("Starting the Dash Plotly app...")
-    app.run(debug=True, host='0.0.0.0', port=8050)
+    host = os.environ.get("HOST")
+    port = int(os.environ.get("PORT", 8050))
+
+    logger.info(f"Starting the Hinge Data Analysis app on {host}:{port}...")
+    app.run(debug=True, host=host, port=port)

@@ -4,7 +4,7 @@ from dash import dcc, dash_table, Input, Output, callback
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import app.analytics.analytics as analytics
+import analytics.analytics as analytics
 
 
 global normalized_events

@@ -15,6 +15,8 @@ import pages.matches as matches
 import pages.user as user
 import pages.home as home
 
+from tools.Logger import logger
+
 USER_FILE_UPLOAD_DIRECTORY = "../data/app_uploaded_files"
 
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
@@ -153,4 +155,5 @@ def update_output(list_of_contents, list_of_names):
 
 
 if __name__ == '__main__':
+    logger.info("Starting the Dash Plotly app...")
     app.run(debug=True, host='0.0.0.0', port=8050)

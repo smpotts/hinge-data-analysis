@@ -4,8 +4,9 @@ from dash import dcc, Input, Output, callback, dash_table
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 
-import analytics.MatchAnalytics as MatchAnalytics
-import analytics.UserAnalytics as ua
+from analytics.UserAnalytics import UserAnalytics
+
+user_analytics = UserAnalytics()
 
 
 layout = html.Div([
@@ -45,7 +46,7 @@ layout = html.Div([
 def update_comment_table(data):
     __check_for_live_update_data(data)
 
-    account_data = MatchAnalytics.import_user_account_data()
+    account_data =  user_analytics.get_account_data() 
     # passing in the account data as a list for the DataTable
     return [
         dash_table.DataTable(data=[account_data], page_size=5,
@@ -53,19 +54,20 @@ def update_comment_table(data):
        ]
 
 
-@callback(
-    Output('live-update-coords-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_coords_graph_live(data):
-    __check_for_live_update_data(data)
+# TODO: commenting this out until there is an alternative
+# @callback(
+#     Output('live-update-coords-graph', 'figure'),
+#     [Input('refresh-page', 'n_clicks')]
+# )
+# def update_coords_graph_live(data):
+#     __check_for_live_update_data(data)
 
-    # initial setup of the global events
-    user_coordinates = ua.parse_user_ip_addresses()
-    # create the funnel graph
-    figure = px.scatter_geo(user_coordinates, locationmode="USA-states", lat="latitude", lon="longitude",
-                projection="orthographic")
-    return figure
+#     # initial setup of the global events
+#     user_coordinates = ua.parse_user_ip_addresses()
+#     # create the funnel graph
+#     figure = px.scatter_geo(user_coordinates, locationmode="USA-states", lat="latitude", lon="longitude",
+#                 projection="orthographic")
+#     return figure
 
 
 # TODO: I don't like this this is repeated in both files, consolidate at some point

@@ -135,7 +135,7 @@ def parse_uploaded_file_contents(list_of_file_contents, list_of_file_names):
         uploaded_file_data = file_content.encode("utf8").split(b";base64,")[1]
 
         with open(os.path.join(USER_FILE_UPLOAD_DIRECTORY, file_name), "wb") as uploaded_file:
-            logger.info(f"Writing file: {file_name}...")
+            logger.info(f"Uploading user file: {file_name}...")
             uploaded_file.write(base64.decodebytes(uploaded_file_data))
 
         # return an html Div of the uploaded file names to display to the user

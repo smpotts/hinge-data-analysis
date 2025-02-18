@@ -5,3 +5,5 @@ data/
 *.pyc
 ./.pytest_cache
 .env
+.vscode
+.pytest_cache

@@ -1,76 +1,118 @@
-from dash import html
+from dash import html, dcc, callback
 import dash_mantine_components as dmc
-from dash import dcc, Input, Output, callback, dash_table
 import plotly.express as px
-from dash.exceptions import PreventUpdate
+from dash.dependencies import Input, Output, State
 
 from analytics.UserAnalytics import UserAnalytics
 
-user_analytics = UserAnalytics()
+def user_photo_slideshow():
+    jpg_files = UserAnalytics().get_media_file_paths()
+    print(jpg_files)
 
-
-layout = html.Div([
-    html.Button('Reload Graphs', id='refresh-page',
-                style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
-    dmc.Space(h=20),
-    dmc.Text("User Analytics", align="center", style={"fontSize": 28}, weight=500),
-    dmc.Text("This section contains insights about your user data that was collected while you were using Hinge."),
-    dmc.Space(h=20),
-
-    # table showing account data
-    dmc.Text("User Account Info", size="xl", align="left", weight=500),
-    dmc.Text("This table shows the account data that was collected while you were using Hinge. This includes data "
-             "about when you downloaded the app, the last time you paused or unpaused the app, and the last time "
-             "you logged in.", align="left"),
-    dmc.Space(h=10),
-    html.Div([
-        dash_table.DataTable(id='datatable-interactivity'),
-        html.Div(id='acct-datatable-interactivity-container'),
-    ]),
-
-    dmc.Space(h=20),
-    # user latitude and longitude coordinates
-    dmc.Text("Where you've used the app", size="xl", align="left", weight=500),
-    dmc.Text("This takes the public IP addresses from the sessions where you used Hinge and uses that to look up the "
-             "latitude and longitude coordinates to show where you were when you were using the app. This is limited "
-             "to 100 sessions.", align="left"),
-    # TODO: figure out what to do with this map because it's god awful to run
-    dcc.Graph("live-update-coords-graph"),
-])
-
+    return dmc.Card(
+        children=[
+            dmc.Text("Photos", weight=750, size="lg"),
+            dmc.Space(h=10),
+            html.Img(id="slideshow-image", style={"width": "100%", "borderRadius": "10px"}),  # Image placeholder
+            dcc.Interval(id="interval-component", interval=10000, n_intervals=0),
+            dcc.Store(id="image-store", data=jpg_files)  # Store images
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"width": "500px", "padding": "20px"},
+    )
 
 @callback(
-    Output('acct-datatable-interactivity-container', 'children'),
-    [Input('refresh-page', 'n_clicks')]
+    Output("slideshow-image", "src"),
+    Input("interval-component", "n_intervals"),
+    State("image-store", "data")  # Get images dynamically from Store
 )
-def update_comment_table(data):
-    __check_for_live_update_data(data)
-
-    account_data =  user_analytics.get_account_data() 
-    # passing in the account data as a list for the DataTable
-    return [
-        dash_table.DataTable(data=[account_data], page_size=5,
-                             style_cell={'textAlign': 'left'})
-       ]
+def update_image(n_intervals, jpg_files):
+    # NOTE: images have to the in an "assets" directory in the same folder as the app.py file
+    return f"assets/{jpg_files[n_intervals % len(jpg_files)]}"  # Use relative path with /assets/
 
 
-# TODO: commenting this out until there is an alternative
-# @callback(
-#     Output('live-update-coords-graph', 'figure'),
-#     [Input('refresh-page', 'n_clicks')]
-# )
-# def update_coords_graph_live(data):
-#     __check_for_live_update_data(data)
+def create_user_location_card():
+    user_location = UserAnalytics().build_user_location_dict()
 
-#     # initial setup of the global events
-#     user_coordinates = ua.parse_user_ip_addresses()
-#     # create the funnel graph
-#     figure = px.scatter_geo(user_coordinates, locationmode="USA-states", lat="latitude", lon="longitude",
-#                 projection="orthographic")
-#     return figure
+    fig = px.scatter_mapbox(
+        lat=[user_location["latitude"]],
+        lon=[user_location["longitude"]],
+        hover_name=[user_location["city"]],
+        zoom=10,
+        height=400
+    )
+
+    # use Mapbox for styling
+    fig.update_layout(
+        mapbox_style="carto-positron",
+        mapbox_center={"lat": user_location["latitude"], "lon": user_location["longitude"]}
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Location", weight=700, size="xl"),
+            dmc.Text(f"Country: {user_location['country']}", size="lg"),
+            dmc.Text(f"Locality: {user_location['locality']}", size="lg"),
+            dmc.Text(f"City: {user_location['city']}", size="lg"),
+            dmc.Text(f"Neighborhood: {user_location['neighborhood']}", size="lg"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  # map visualization
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"width": "500px", "height": "520px"},
+    )
 
 
-# TODO: I don't like this this is repeated in both files, consolidate at some point
-def __check_for_live_update_data(data):
-    if data is None:
-        raise PreventUpdate
+def create_user_summary_card():
+    user_summary = UserAnalytics().build_user_summary_dict()
+    
+    return dmc.Card(
+        children=[
+            dmc.Text(f"{user_summary['first_name']}", weight=750, size="xl"),
+            dmc.Text(f"Age: {user_summary['age']}", size="lg", color="dimmed"),
+            dmc.Text(f"Height (ft, in): {user_summary['height_feet'], user_summary['height_inches']}", size="lg", color="dimmed"),
+            dmc.Text(f"Gender: {user_summary['gender']}", size="lg", color="dimmed"),
+            dmc.Text(f"Ethnicities: {user_summary['ethnicities']}", size="lg"),
+            dmc.Text(f"Religions: {user_summary['religions']}", size="lg"),
+            dmc.Text(f"Job: {user_summary['job_title']}", size="lg"),
+            dmc.Text(f"Workplaces: {user_summary['workplaces']}", size="lg"),
+            dmc.Text(f"Education: {user_summary['education_attained']}", size="lg"),
+            dmc.Text(f"Hometown: {user_summary['hometowns']}", size="lg"),
+            dmc.Text(f"Politics: {user_summary['politics']}", size="lg"),
+            dmc.Text(f"Pets: {user_summary['pets']}", size="lg"),
+            dmc.Text(f"Relationship Types: {user_summary['relationship_types']}", size="lg"),
+            dmc.Text(f"Dating Intentions: {user_summary['dating_intention']}", size="lg"),
+            dmc.Text(f"Last Pause Duration: {user_summary['last_pause_duration']} days", size="lg"),
+            dmc.Text(f"On App Duration: {user_summary['on_app_duration']} days", size="lg"),
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"width": "500px", "padding": "20px", "height": "520px"},
+    )
+
+layout = html.Div([
+    dmc.Text("User Analytics", align="center", style={"fontSize": 28}, weight=500),
+    dmc.Space(h=20),
+    dmc.Grid(
+    children=[
+        dmc.Col(
+            user_photo_slideshow(),
+            span=4
+        ),
+         dmc.Col(
+            create_user_summary_card(),
+            span=4,  
+         ),
+         dmc.Col(
+            create_user_location_card(),
+            span=4  
+         )
+    ],
+    style={"height": "50vh"}  
+)
+])

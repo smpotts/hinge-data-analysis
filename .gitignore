@@ -7,3 +7,4 @@ data/
 .env
 .vscode
 .pytest_cache
+app/assets/

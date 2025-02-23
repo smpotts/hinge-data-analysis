@@ -79,38 +79,38 @@ app.layout = html.Div([
         dmc.Space(h=30)]),
 
     # section for uploading files
-    html.Div([
-        dmc.Text("Upload Files", style={"fontSize": 28}, weight=500),
-        dmc.Text("Upload the `matches.json` and the `user.json` files from the zipped Hinge export for analysis."),
-        dmc.Space(h=20),
-        dcc.Upload(
-            id='upload-data',
-            children=html.Div([
-                'Drag and Drop or ',
-                html.A('Select Files')
-            ]),
-            style={
-                'width': '100%',
-                'height': '60px',
-                'lineHeight': '60px',
-                'borderWidth': '1px',
-                'borderStyle': 'dashed',
-                'borderRadius': '5px',
-                'textAlign': 'center',
-                'margin': '10px',
-                "fontSize": 20,
-                'font-family': "Open Sans, verdana, arial, sans-serif"
-            },
-            # Allow multiple files to be uploaded
-            multiple=True
-        ),
-        html.Div(id='output-data-upload')
-    ]),
+    # html.Div([
+    #     dmc.Text("Upload Files", style={"fontSize": 28}, weight=500),
+    #     dmc.Text("Upload the `matches.json` and the `user.json` files from the zipped Hinge export for analysis."),
+    #     dmc.Space(h=20),
+    #     dcc.Upload(
+    #         id='upload-data',
+    #         children=html.Div([
+    #             'Drag and Drop or ',
+    #             html.A('Select Files')
+    #         ]),
+    #         style={
+    #             'width': '100%',
+    #             'height': '60px',
+    #             'lineHeight': '60px',
+    #             'borderWidth': '1px',
+    #             'borderStyle': 'dashed',
+    #             'borderRadius': '5px',
+    #             'textAlign': 'center',
+    #             'margin': '10px',
+    #             "fontSize": 20,
+    #             'font-family': "Open Sans, verdana, arial, sans-serif"
+    #         },
+    #         # Allow multiple files to be uploaded
+    #         multiple=True
+    #     ),
+    #     html.Div(id='output-data-upload')
+    # ]),
 
     # show links to the other pages
     dmc.Text("Data Insights", style={"fontSize": 28}, weight=500),
-    dmc.Text("After uploading your data files, you can click on the page links below to see insights "
-             "from the data provided by Hinge."),
+    # dmc.Text("After uploading your data files, you can click on the page links below to see insights "
+            #  "from the data provided by Hinge."),
     dmc.Space(h=10),
     html.Div([
         html.Div(
@@ -146,19 +146,19 @@ def parse_uploaded_file_contents(list_of_file_contents, list_of_file_names):
         ])
 
 
-@callback(Output('output-data-upload', 'children'),
-          Input('upload-data', 'contents'),
-          State('upload-data', 'filename'))
-def update_output(list_of_contents, list_of_names):
-    if list_of_contents is not None:
-        children = [
-            parse_uploaded_file_contents(list_of_contents, list_of_names)]
-        return children
+# @callback(Output('output-data-upload', 'children'),
+#           Input('upload-data', 'contents'),
+#           State('upload-data', 'filename'))
+# def update_output(list_of_contents, list_of_names):
+#     if list_of_contents is not None:
+#         children = [
+#             parse_uploaded_file_contents(list_of_contents, list_of_names)]
+#         return children
 
 
 if __name__ == '__main__':
     host = os.environ.get("HOST")
     port = int(os.environ.get("PORT", 8050))
 
-    logger.info(f"Starting the Hinge Data Analysis app on {host}:{port}...")
+    logger.info(f"Running the Hinge Data Analysis app on {host}:{port}...")
     app.run(debug=True, host=host, port=port)

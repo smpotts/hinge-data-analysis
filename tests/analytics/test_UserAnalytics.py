@@ -20,9 +20,9 @@ USER_DATA = '''
         }
     ],
     "account": {
-        "signup_time": "2001-06-29 03:27:17.539",
-        "last_pause_time": "2003-09-04 03:04:32",
-        "last_unpause_time": "2020-12-10 16:53:40",
+        "signup_time": "2024-01-01 03:27:17.539",
+        "last_pause_time": "2020-09-04 03:04:32",
+        "last_unpause_time": "2020-09-10 16:53:40",
         "last_seen": "2024-01-17 04:07:39",
         "device_platform": "ios",
         "device_os": "16.6.1",
@@ -33,7 +33,19 @@ USER_DATA = '''
     "profile": {
         "first_name": "Fake User",
         "age": 99,
-        "height_centimeters": 213
+        "height_centimeters": 213,
+        "gender": "female",
+        "job_title": "Astronaut",
+        "education_attained": "Undergraduate",
+        "languages_spoken": "English",
+        "ethnicities": "Prefer Not to Say",
+        "pets": "Dog",
+        "politics": "Prefer Not to Say",
+        "religions": "Prefer Not to Say",
+        "hometowns": "moon",
+        "relationship_types": "Prefer Not to Say",
+        "dating_intention": "Prefer Not to Say",
+        "workplaces": "Space"
     },
     "preferences": {
         "distance_miles_max": 50,
@@ -43,7 +55,10 @@ USER_DATA = '''
     "location": {
         "latitude": 65.00,
         "longitude": 18.00,
-        "country": "Iceland"
+        "country": "Iceland",
+        "locality": "New York",
+        "sublocality": "Brooklyn",
+        "neighborhood": "Flatbush"
     }
 }
 '''
@@ -114,3 +129,28 @@ def test_location_data(user_analytics):
     assert locations["latitude"] == 65.00
     assert locations["longitude"] == 18.00
     assert locations["country"] == "Iceland"
+
+def test_build_user_summary_dict(user_analytics):
+    result = user_analytics.build_user_summary_dict()
+    assert result["first_name"] == "Fake User"
+    assert result["age"] == 99
+    assert result["height_feet"] == 6
+    assert result["height_inches"] == 11.9
+    assert result["gender"] == "female"
+    assert result["job_title"] == "Astronaut"
+    assert result["education_attained"] == "Undergraduate" 
+    assert result["languages_spoken"] == "English"
+    assert result["politics"] == "Prefer Not to Say" 
+    assert result["pets"] == "Dog"
+    assert result["last_pause_duration"] == 6
+    assert result["on_app_duration"] == 16
+
+def test_build_user_location_dict(user_analytics):
+    result = user_analytics.build_user_location_dict()
+    assert result["city"] == "Brooklyn"
+    assert result["latitude"] == 65.00
+    assert result["longitude"] == 18.00
+    assert result["country"] == "Iceland"
+    assert result["neighborhood"] == "Flatbush"
+    assert result["locality"] == "New York"
+    

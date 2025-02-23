@@ -38,8 +38,14 @@ USER_DATA = '''
         "job_title": "Astronaut",
         "education_attained": "Undergraduate",
         "languages_spoken": "English",
+        "ethnicities": "Prefer Not to Say",
         "pets": "Dog",
-        "politics": "Prefer Not to Say"
+        "politics": "Prefer Not to Say",
+        "religions": "Prefer Not to Say",
+        "hometowns": "moon",
+        "relationship_types": "Prefer Not to Say",
+        "dating_intention": "Prefer Not to Say",
+        "workplaces": "Space"
     },
     "preferences": {
         "distance_miles_max": 50,
@@ -50,8 +56,9 @@ USER_DATA = '''
         "latitude": 65.00,
         "longitude": 18.00,
         "country": "Iceland",
+        "locality": "New York",
         "sublocality": "Brooklyn",
-        "neighborhood": "Flatbush",
+        "neighborhood": "Flatbush"
     }
 }
 '''

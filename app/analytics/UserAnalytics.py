@@ -1,4 +1,5 @@
 from datetime import datetime
+from collections import defaultdict
 import json
 import os
 
@@ -86,6 +87,27 @@ class UserAnalytics:
             lag_has_microseconds=True)
 
         return user_summary
+    
+    def count_displayed_attributes(self):
+        profile_data = self.get_profile_data()
+        
+        categories = {
+            "identity": ["gender_identity_displayed", "ethnicities_displayed", "religions_displayed", "politics_displayed", "languages_spoken_displayed", "hometowns_displayed"],
+            "lifestyle": ["smoking_displayed", "drinking_displayed", "marijuana_displayed", "drugs_displayed", "vaccination_status_displayed", "pets_displayed", ],
+            "career": ["workplaces_displayed", "job_title_displayed", "schools_displayed"],
+            "future_plans": ["family_plans_displayed", "dating_intention_displayed", "children_displayed", "relationship_type_displayed"]
+        }
+
+        # initialize counters
+        display_counts = defaultdict(lambda: {"true": 0, "false": 0})
+        
+        for category, fields in categories.items():
+            for field in fields:
+                if field in profile_data:
+                    display_value = profile_data[field]
+                    display_counts[category]["true" if display_value else "false"] += 1
+        return dict(display_counts)
+
     
 def _convert_height(cm):
     inches = cm / 2.54

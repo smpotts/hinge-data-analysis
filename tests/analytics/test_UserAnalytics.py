@@ -35,7 +35,25 @@ USER_DATA = '''
         "age": 99,
         "height_centimeters": 213,
         "gender": "female",
+        "gender_identity_displayed": false,
+        "ethnicities_displayed": false,
+        "religions_displayed": true,
+        "workplaces_displayed": false,
+        "schools_displayed": true,
         "job_title": "Astronaut",
+        "job_title_displayed": true,
+        "hometowns_displayed": false,
+        "smoking_displayed": false,
+        "drinking_displayed": true,
+        "marijuana_displayed": false,
+        "drugs_displayed": false,
+        "children_displayed": false,
+        "family_plans_displayed": true,
+        "politics_displayed": false,
+        "vaccination_status_displayed": true,
+        "dating_intention_displayed": false,
+        "languages_spoken_displayed": true,
+        "relationship_type_displayed": false,
         "education_attained": "Undergraduate",
         "languages_spoken": "English",
         "ethnicities": "Prefer Not to Say",
@@ -62,6 +80,7 @@ USER_DATA = '''
     }
 }
 '''
+COUNT_DISPLAYED_ATTRIB_OUTPUT = {'identity': {'true': 2, 'false': 4}, 'lifestyle': {'true': 2, 'false': 3}, 'career': {'true': 2, 'false': 1}, 'future_plans': {'true': 1, 'false': 3}}
 
 #########################################################################################
 # pytest fixtures
@@ -154,3 +173,6 @@ def test_build_user_location_dict(user_analytics):
     assert result["neighborhood"] == "Flatbush"
     assert result["locality"] == "New York"
     
+def test_count_displayed_attributes(user_analytics):
+    result = user_analytics.count_displayed_attributes()
+    assert result == COUNT_DISPLAYED_ATTRIB_OUTPUT 

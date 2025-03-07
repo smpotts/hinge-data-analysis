@@ -7,7 +7,6 @@ from analytics.UserAnalytics import UserAnalytics
 
 def user_photo_slideshow():
     jpg_files = UserAnalytics().get_media_file_paths()
-    print(jpg_files)
 
     return dmc.Card(
         children=[

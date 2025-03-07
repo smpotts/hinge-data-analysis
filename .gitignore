@@ -8,3 +8,4 @@ data/
 .vscode
 .pytest_cache
 app/assets/
+scratch/

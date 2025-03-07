@@ -2,8 +2,60 @@ from dash import html, dcc, callback
 import dash_mantine_components as dmc
 import plotly.express as px
 from dash.dependencies import Input, Output, State
+import plotly.graph_objects as go
 
 from analytics.UserAnalytics import UserAnalytics
+
+def disclosure_vs_privacy():
+    category_counts = UserAnalytics().count_displayed_attributes()
+
+    category_labels = {
+        "identity": "Identity & Demographics",
+        "career": "Work & Education",
+        "lifestyle": "Lifestyle & Habits",
+        "future_plans": "Dating Preferences & Intentions"
+    }
+
+    # extract the category keys and T/F counts to pass to the graphs
+    cat_keys = [category_labels[cat] for cat in category_counts.keys()] 
+    true_counts = [category_counts[cat]['true'] for cat in category_counts]  
+    false_counts = [category_counts[cat]['false'] for cat in category_counts] 
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=cat_keys, 
+        y=true_counts, 
+        name="Displayed (True)", 
+        marker_color='blue'  
+    ))
+
+    fig.add_trace(go.Bar(
+        x=cat_keys, 
+        y=false_counts, 
+        name="Not Displayed (False)", 
+        marker_color='red' 
+    ))
+
+    fig.update_layout(
+        title="Profile Information Visibility: Displayed vs. Hidden",
+        xaxis_title="Profile Information Category",
+        yaxis_title="Number of Profile Fields",
+        barmode='group',  
+        template="plotly_white"
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("How much information does this user choose to share vs. keep private?", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"height": "520px"},
+    )
 
 def user_photo_slideshow():
     jpg_files = UserAnalytics().get_media_file_paths()
@@ -19,7 +71,7 @@ def user_photo_slideshow():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"width": "500px", "padding": "20px"},
+        style={"width": "500px", "height": "520px", "padding": "20px"},
     )
 
 @callback(
@@ -112,6 +164,7 @@ layout = html.Div([
             span=4  
          )
     ],
-    style={"height": "50vh"}  
-)
+    style={"height": "50vh"}  ),
+    dmc.Space(h=120),
+    disclosure_vs_privacy()
 ])

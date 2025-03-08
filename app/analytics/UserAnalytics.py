@@ -88,6 +88,18 @@ class UserAnalytics:
 
         return user_summary
     
+    def profile_preference_selections(self):
+        profile_data = self.get_profile_data()
+        preference_data = self.get_preferences_data()
+
+        profile_fields = ["religions", "ethnicities", "smoking", "drinking", "marijuana", "drugs", "children", "family_plans", "education_attained", "politics"] 
+        preference_fields = ["religion_preference", "ethnicity_preference", "smoking_preference", "drinking_preference", "marijuana_preference", "drugs_preference", "children_preference", "family_plans_preference", "education_attained_preference", "politics_preference"]
+
+        profile_values = [profile_data[field] for field in profile_fields if field in profile_data]
+        preference_values = [preference_data[field] for field in preference_fields if field in preference_data]
+
+        return profile_values, preference_values
+    
     def count_displayed_attributes(self):
         profile_data = self.get_profile_data()
         

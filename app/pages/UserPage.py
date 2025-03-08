@@ -6,6 +6,40 @@ import plotly.graph_objects as go
 
 from analytics.UserAnalytics import UserAnalytics
 
+def potential_misalignments():
+    # define categories
+    categories = ["Religion", "Ethnicity", "Smoking", "Drinking", "Marijuana", "Drugs", "Children", "Family Plans", "Education", "Politics"]
+
+    profile_selections, preferences_selections = UserAnalytics().profile_preference_selections() 
+
+    # create table with two data columns
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=["Category", "User Profile", "User Preferences"],
+                    fill_color="lightgrey",
+                    align="left"),
+        cells=dict(values=[categories, profile_selections, preferences_selections],
+                fill_color="white",
+                align="left")
+    )])
+
+    fig.update_layout(title="Profile Visibility Comparison Between User A and User B")
+
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Does this person’s dating criteria match how they present themselves?", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This shows potential alignment or misalignment between the users profile and their preferences.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"height": "400px"},
+    )
+
+
 def disclosure_vs_privacy():
     category_counts = UserAnalytics().count_displayed_attributes()
 
@@ -48,6 +82,8 @@ def disclosure_vs_privacy():
         children=[
             dmc.Space(h=10),
             dmc.Text("How much information does this user choose to share vs. keep private?", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc. and helps identify if the user is open vs. private about certain topics.", size="md"),
             dmc.Space(h=10),
             dcc.Graph(figure=fig)  
         ],
@@ -166,5 +202,7 @@ layout = html.Div([
     ],
     style={"height": "50vh"}  ),
     dmc.Space(h=120),
-    disclosure_vs_privacy()
+    disclosure_vs_privacy(),
+    potential_misalignments(),
+    dmc.Space(h=50)
 ])

@@ -36,13 +36,21 @@ USER_DATA = '''
         "height_centimeters": 213,
         "gender": "female",
         "gender_identity_displayed": false,
+        "ethnicities": "[Prefer Not to Say]",
         "ethnicities_displayed": false,
+        "religions": "[Prefer Not to Say]",
         "religions_displayed": true,
         "workplaces_displayed": false,
         "schools_displayed": true,
         "job_title": "Astronaut",
         "job_title_displayed": true,
         "hometowns_displayed": false,
+        "smoking": "[Prefer Not to Say]",
+        "drinking": "[Prefer Not to Say]",
+        "drugs": "[Prefer Not to Say]",
+        "marijuana": "[Prefer Not to Say]",
+        "children": "[Prefer Not to Say]",
+        "family_plans": "[Prefer Not to Say]",
         "smoking_displayed": false,
         "drinking_displayed": true,
         "marijuana_displayed": false,
@@ -68,7 +76,27 @@ USER_DATA = '''
     "preferences": {
         "distance_miles_max": 50,
         "age_min": 98,
-        "age_max": 99
+        "age_max": 99,
+        "ethnicity_preference": "[Open to All]",
+        "ethnicity_dealbreaker": false,
+        "religion_preference": "[Open to All]",
+        "religion_dealbreaker": false,
+        "smoking_preference": "[Open to All]",
+        "smoking_dealbreaker": false,
+        "drinking_preference": "[Open to All]",
+        "drinking_dealbreaker": false,
+        "marijuana_preference": "[Open to All]",
+        "marijuana_dealbreaker": false,
+        "drugs_preference": "[Open to All]",
+        "drugs_dealbreaker": false,
+        "children_preference": "[Open to All]",
+        "children_dealbreaker": false,
+        "family_plans_preference": "[Open to All]",
+        "family_plans_dealbreaker": false,
+        "education_attained_preference": "[Open to All]",
+        "education_attained_dealbreaker": false,
+        "politics_preference": "[Open to All]",
+        "politics_dealbreaker": false
     },
     "location": {
         "latitude": 65.00,
@@ -176,3 +204,8 @@ def test_build_user_location_dict(user_analytics):
 def test_count_displayed_attributes(user_analytics):
     result = user_analytics.count_displayed_attributes()
     assert result == COUNT_DISPLAYED_ATTRIB_OUTPUT 
+
+def test_profile_preference_selections(user_analytics):
+    profile, prefs = user_analytics.profile_preference_selections()
+    assert len(profile) == len(prefs)
+    assert len(profile) == 10

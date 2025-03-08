@@ -83,6 +83,8 @@ USER_DATA = '''
         "distance_miles_max": 50,
         "age_min": 98,
         "age_max": 99,
+        "age_dealbreaker": true,
+        "height_dealbreaker": false,
         "ethnicity_preference": "[Open to All]",
         "ethnicity_dealbreaker": false,
         "religion_preference": "[Open to All]",
@@ -115,6 +117,8 @@ USER_DATA = '''
 }
 '''
 COUNT_DISPLAYED_ATTRIB_OUTPUT = {'identity': {'true': 2, 'false': 4}, 'lifestyle': {'true': 2, 'false': 3}, 'career': {'true': 2, 'false': 1}, 'future_plans': {'true': 1, 'false': 3}}
+STRINGENCY_COUNTS = {'physical': {'true': 1, 'false': 1}, 'identity': {'true': 0, 'false': 3}, 'lifestyle': {'true': 0, 'false': 4}, 'career': {'true': 0, 'false': 1}, 'future_plans': {'true': 0, 'false': 2}}
+GEOLITE_DB_PATH = 'data/db_path.mmdb'
 
 #########################################################################################
 # pytest fixtures
@@ -122,6 +126,7 @@ COUNT_DISPLAYED_ATTRIB_OUTPUT = {'identity': {'true': 2, 'false': 4}, 'lifestyle
 @pytest.fixture
 def user_analytics(monkeypatch):
     monkeypatch.setenv("USER_FILE_PATH", USER_FILE_PATH)
+    monkeypatch.setenv("GEOLITE_DB_PATH", GEOLITE_DB_PATH)
 
     with patch("builtins.open", mock_open(read_data=USER_DATA)) as mock_file, \
          patch("json.load", return_value=json.loads(USER_DATA)) as mock_json_load:
@@ -220,3 +225,10 @@ def test_profile_preference_selections(user_analytics):
 # def test_collect_location_from_ip(user_analytics):
 #     result = user_analytics.collect_location_from_ip() 
 #     assert result is not None
+
+def test_count_stringeny_attributes(user_analytics):
+    results = user_analytics.count_stringeny_attributes()
+    print(results)
+
+    assert list(results.keys()) == ['physical', 'identity', 'lifestyle', 'career', 'future_plans']
+    assert results == STRINGENCY_COUNTS 

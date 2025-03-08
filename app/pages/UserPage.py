@@ -6,6 +6,38 @@ import plotly.graph_objects as go
 
 from analytics.UserAnalytics import UserAnalytics
 
+def geolocation():
+    df = UserAnalytics().collect_location_from_ip()
+    fig = px.scatter_geo(
+        df,
+        lat="latitude",
+        lon="longitude",
+        text="city",
+        hover_name="ip",
+        hover_data=["region", "country"],
+        projection="orthographic"  # this makes it a globe
+    )
+
+    fig.update_geos(
+        showland=True, landcolor="rgb(217, 217, 217)",  # customize land color
+        showocean=True, oceancolor="rgb(204, 230, 255)",  # customize ocean color
+        showcountries=True, countrycolor="rgb(255, 255, 255)"  # show country borders
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("User Activity Across the Globe", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("Where the user has logged onto the app based on the IP address collected from their device.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"height": "520px"},
+    )
+
 def potential_misalignments():
     # define categories
     categories = ["Religion", "Ethnicity", "Smoking", "Drinking", "Marijuana", "Drugs", "Children", "Family Plans", "Education", "Politics"]
@@ -204,5 +236,6 @@ layout = html.Div([
     dmc.Space(h=120),
     disclosure_vs_privacy(),
     potential_misalignments(),
+    geolocation(),
     dmc.Space(h=50)
 ])

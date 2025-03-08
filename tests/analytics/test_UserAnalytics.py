@@ -17,6 +17,12 @@ USER_DATA = '''
             "device_model": "unknown",
             "device_platform": "ios",
             "device_os_versions": "16.5.1"
+        },
+        {
+            "ip_address": "130.279.438.00",
+            "device_model": "unknown",
+            "device_platform": "ios",
+            "device_os_versions": "16.5.1"
         }
     ],
     "account": {
@@ -209,3 +215,7 @@ def test_profile_preference_selections(user_analytics):
     profile, prefs = user_analytics.profile_preference_selections()
     assert len(profile) == len(prefs)
     assert len(profile) == 10
+
+def test_collect_location_from_ip(user_analytics):
+    result = user_analytics.collect_location_from_ip() 
+    assert result is not None

@@ -1,5 +1,8 @@
 from datetime import datetime
 from collections import defaultdict
+import geoip2.database
+from geopy.geocoders import Nominatim
+import pandas as pd
 import json
 import os
 
@@ -7,6 +10,7 @@ class UserAnalytics:
     def __init__(self):
         self.assets_path = os.environ.get("ASSETS_PATH")
         self.user_file_path = os.environ.get("USER_FILE_PATH")
+        self.geo_lite_db_path = os.environ.get("GEOLITE_DB_PATH")
         if self.user_file_path is None:
             raise Exception("USER_FILE_PATH environment variable is not set.")
         
@@ -119,6 +123,39 @@ class UserAnalytics:
                     display_value = profile_data[field]
                     display_counts[category]["true" if display_value else "false"] += 1
         return dict(display_counts)
+
+    def collect_location_from_ip(self):
+        device_data = self.get_devices_data()
+        ip_addresses = [device["ip_address"] for device in device_data]
+
+        geolocation_data = [self._get_city_info(ip) for ip in ip_addresses if self._get_city_info(ip) is not None]
+
+        return pd.DataFrame(geolocation_data)
+
+    def _get_city_info(self, ip):
+        # initialize GeoLite2 reader & geocoder
+        geolite_db_path = self.geo_lite_db_path
+        reader = geoip2.database.Reader(geolite_db_path)
+        geolocator = Nominatim(user_agent="geoip_mapper")
+        try:
+            response = reader.city(ip)
+            city = response.city.name
+            region = response.subdivisions.most_specific.name
+            country = response.country.name
+
+            # get latitude & longitude
+            location = geolocator.geocode(f"{city}, {region}, {country}")
+            if location:
+                return {
+                    "ip": ip,
+                    "city": city,
+                    "region": region,
+                    "country": country,
+                    "latitude": location.latitude,
+                    "longitude": location.longitude
+                }
+        except:
+            return None  # invalid or private IP
 
     
 def _convert_height(cm):

@@ -11,8 +11,10 @@ class UserAnalytics:
         self.assets_path = os.environ.get("ASSETS_PATH")
         self.user_file_path = os.environ.get("USER_FILE_PATH")
         self.geo_lite_db_path = os.environ.get("GEOLITE_DB_PATH")
+
         if self.geo_lite_db_path is None:
             raise Exception("GEOLITE_DB_PATH environment variable is not set.")
+            
         if self.user_file_path is None:
             raise Exception("USER_FILE_PATH environment variable is not set.")
         

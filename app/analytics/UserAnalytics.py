@@ -5,12 +5,14 @@ from geopy.geocoders import Nominatim
 import pandas as pd
 import json
 import os
+import shutil
 
 class UserAnalytics:
     def __init__(self):
         self.assets_path = os.environ.get("ASSETS_PATH")
         self.user_file_path = os.environ.get("USER_FILE_PATH")
         self.geo_lite_db_path = os.environ.get("GEOLITE_DB_PATH")
+        self.media_path = os.environ.get("MEDIA_PATH")
 
         # TODO: come back and fix this
         # if self.geo_lite_db_path is None:
@@ -28,8 +30,10 @@ class UserAnalytics:
         self.user_data = user_data
 
     def get_media_file_paths(self):
-        assets_dir = self.assets_path
-        jpg_files = [f for f in os.listdir(assets_dir) if f.endswith(".jpg")]
+        # need to copy the files from the media_path to the assets_dir
+        _copy_files(self.media_path, self.assets_path)
+
+        jpg_files = [f for f in os.listdir(self.assets_path) if f.endswith(".jpg")]
         return jpg_files
     
     def get_account_data(self):
@@ -157,6 +161,18 @@ class UserAnalytics:
         geolocation_data = [self._get_city_info(ip) for ip in ip_addresses if self._get_city_info(ip) is not None]
 
         return pd.DataFrame(geolocation_data)
+    
+def _copy_files(src_dir, dest_dir):
+    os.makedirs(dest_dir, exist_ok=True)
+
+    # loop through all files in source directory
+    for file_name in os.listdir(src_dir):
+        src_path = os.path.join(src_dir, file_name)
+        dest_path = os.path.join(dest_dir, file_name)
+
+        # only copy files (not subdirectories)
+        if os.path.isfile(src_path):
+            shutil.copy2(src_path, dest_path)  # copy2 preserves metadata
 
     def _get_city_info(self, ip):
         # initialize GeoLite2 reader & geocoder

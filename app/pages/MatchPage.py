@@ -12,12 +12,12 @@ global normalized_events
 
 def serve_layout():
     return html.Div([
+        # TODO: need to remove the button, but it has dependencies with the charts so will leave it until I can redo the charts
         html.Button('Reload Graphs', id='refresh-page', style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
         dmc.Space(h=20),
 
         dmc.Text("Match Analytics", align="center", style={"fontSize": 28}, weight=500),
-        dmc.Text("This section contains insights about the interactions (likes, matches, chats, and unmatches) you've "
-                 "had on Hinge."),
+        dmc.Text("This section reveals patterns in the user's matching behavior, preferences, and key factors that influence successful connections with potential matches."),
         dmc.Space(h=20),
 
         # funnel graph showing breakdown of interactions

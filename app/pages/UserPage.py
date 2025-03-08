@@ -187,7 +187,7 @@ def user_photo_slideshow():
 
     return dmc.Card(
         children=[
-            dmc.Text("Photos", weight=750, size="lg"),
+            dmc.Text("User Uploaded Photos", align="center", weight=750, size="xl"),
             dmc.Space(h=10),
             html.Img(id="slideshow-image", style={"width": "100%", "borderRadius": "10px"}),  # Image placeholder
             dcc.Interval(id="interval-component", interval=10000, n_intervals=0),
@@ -228,7 +228,7 @@ def create_user_location_card():
     return dmc.Card(
         children=[
             dmc.Space(h=10),
-            dmc.Text("Location", weight=700, size="xl"),
+            dmc.Text("User Location", weight=700, align="center", size="xl"),
             dmc.Text(f"Country: {user_location['country']}", size="lg"),
             dmc.Text(f"Locality: {user_location['locality']}", size="lg"),
             dmc.Text(f"City: {user_location['city']}", size="lg"),
@@ -248,10 +248,10 @@ def create_user_summary_card():
     
     return dmc.Card(
         children=[
-            dmc.Text(f"{user_summary['first_name']}", weight=750, size="xl"),
+            dmc.Text(f"{user_summary['first_name']}", align="center", weight=750, size="xl"),
             dmc.Text(f"Age: {user_summary['age']}", size="lg", color="dimmed"),
-            dmc.Text(f"Height (ft, in): {user_summary['height_feet'], user_summary['height_inches']}", size="lg", color="dimmed"),
-            dmc.Text(f"Gender: {user_summary['gender']}", size="lg", color="dimmed"),
+            dmc.Text(f"Height (ft, in): {user_summary['height_feet'], user_summary['height_inches']}", size="lg"),
+            dmc.Text(f"Gender: {user_summary['gender']}", size="lg"),
             dmc.Text(f"Ethnicities: {user_summary['ethnicities']}", size="lg"),
             dmc.Text(f"Religions: {user_summary['religions']}", size="lg"),
             dmc.Text(f"Job: {user_summary['job_title']}", size="lg"),
@@ -273,6 +273,8 @@ def create_user_summary_card():
 
 layout = html.Div([
     dmc.Text("User Analytics", align="center", style={"fontSize": 28}, weight=500),
+    dmc.Space(h=10),
+    dmc.Text("This section contains insights into how the user's profile is presented, the preferences they've set, and how their interactions shape their experience on the app."),
     dmc.Space(h=20),
     dmc.Grid(
     children=[
@@ -293,7 +295,7 @@ layout = html.Div([
     dmc.Space(h=120),
     disclosure_vs_privacy(),
     potential_misalignments(),
-    geolocation(),
+    # geolocation(), # TODO: this is causing issues with too many lookup calls
     stringency_vs_flexibility(),
     dmc.Space(h=50)
 ])

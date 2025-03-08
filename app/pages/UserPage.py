@@ -6,6 +6,63 @@ import plotly.graph_objects as go
 
 from analytics.UserAnalytics import UserAnalytics
 
+BLUE = "#3BAAC4"
+REDISH = "#C4553B"
+
+def stringency_vs_flexibility():
+    dealbreaker_counts = UserAnalytics().count_stringeny_attributes()
+
+    category_labels = {
+        "physical": "Age & Height",
+        "identity": "Identity & Demographics",
+        "career": "Work & Education",
+        "lifestyle": "Lifestyle & Habits",
+        "future_plans": "Dating Preferences & Intentions"
+    }
+
+    # extract the category keys and T/F counts to pass to the graphs
+    cat_keys = [category_labels[cat] for cat in dealbreaker_counts.keys()] 
+    true_counts = [dealbreaker_counts[cat]['true'] for cat in dealbreaker_counts]  
+    false_counts = [dealbreaker_counts[cat]['false'] for cat in dealbreaker_counts] 
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=cat_keys, 
+        y=true_counts, 
+        name="Dealbreaker (True)", 
+        marker_color=REDISH
+    ))
+
+    fig.add_trace(go.Bar(
+        x=cat_keys, 
+        y=false_counts, 
+        name="Open (False)", 
+        marker_color=BLUE
+    ))
+
+    fig.update_layout(
+        title="Dating Preferences: Dealbreakers vs. Open Choices",
+        xaxis_title="Preference Category",
+        yaxis_title="Number of Dealbreakers",
+        barmode='group',  
+        template="plotly_white"
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("How strict or open is this person in their dating preferences?", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This bar chart compares the number of 'dealbreakers' versus 'open' preferences across different dating categories, highlighting which factors are most important or flexible in the user's online dating criteria.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        style={"height": "520px"},
+    )
+
 def geolocation():
     df = UserAnalytics().collect_location_from_ip()
     fig = px.scatter_geo(
@@ -93,14 +150,14 @@ def disclosure_vs_privacy():
         x=cat_keys, 
         y=true_counts, 
         name="Displayed (True)", 
-        marker_color='blue'  
+        marker_color=BLUE
     ))
 
     fig.add_trace(go.Bar(
         x=cat_keys, 
         y=false_counts, 
         name="Not Displayed (False)", 
-        marker_color='red' 
+        marker_color=REDISH
     ))
 
     fig.update_layout(
@@ -237,5 +294,6 @@ layout = html.Div([
     disclosure_vs_privacy(),
     potential_misalignments(),
     geolocation(),
+    stringency_vs_flexibility(),
     dmc.Space(h=50)
 ])

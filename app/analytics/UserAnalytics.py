@@ -11,6 +11,8 @@ class UserAnalytics:
         self.assets_path = os.environ.get("ASSETS_PATH")
         self.user_file_path = os.environ.get("USER_FILE_PATH")
         self.geo_lite_db_path = os.environ.get("GEOLITE_DB_PATH")
+        if self.geo_lite_db_path is None:
+            raise Exception("GEOLITE_DB_PATH environment variable is not set.")
         if self.user_file_path is None:
             raise Exception("USER_FILE_PATH environment variable is not set.")
         
@@ -103,6 +105,27 @@ class UserAnalytics:
         preference_values = [preference_data[field] for field in preference_fields if field in preference_data]
 
         return profile_values, preference_values
+
+    def count_stringeny_attributes(self):
+        preferences = self.get_preferences_data()
+
+        dealbreaker_cats = {
+            "physical": ["age_dealbreaker", "height_dealbreaker"],
+            "identity": ["ethnicity_dealbreaker", "religion_dealbreaker", "politics_dealbreaker"],
+            "lifestyle": ["smoking_dealbreaker", "drinking_dealbreaker", "marijuana_dealbreaker", "drugs_dealbreaker"],
+            "career": ["education_attained_dealbreaker"],
+            "future_plans": ["children_dealbreaker", "family_plans_dealbreaker"]
+        }
+        # initialize counters
+        display_counts = defaultdict(lambda: {"true": 0, "false": 0})
+
+        for category, fields in dealbreaker_cats.items():
+            for field in fields:
+                if field in preferences:
+                    display_value = preferences[field]
+                    display_counts[category]["true" if display_value else "false"] += 1
+        return dict(display_counts)
+
     
     def count_displayed_attributes(self):
         profile_data = self.get_profile_data()

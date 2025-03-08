@@ -118,6 +118,7 @@ USER_DATA = '''
 '''
 COUNT_DISPLAYED_ATTRIB_OUTPUT = {'identity': {'true': 2, 'false': 4}, 'lifestyle': {'true': 2, 'false': 3}, 'career': {'true': 2, 'false': 1}, 'future_plans': {'true': 1, 'false': 3}}
 STRINGENCY_COUNTS = {'physical': {'true': 1, 'false': 1}, 'identity': {'true': 0, 'false': 3}, 'lifestyle': {'true': 0, 'false': 4}, 'career': {'true': 0, 'false': 1}, 'future_plans': {'true': 0, 'false': 2}}
+GEOLITE_DB_PATH = 'data/db_path.mmdb'
 
 #########################################################################################
 # pytest fixtures
@@ -125,6 +126,7 @@ STRINGENCY_COUNTS = {'physical': {'true': 1, 'false': 1}, 'identity': {'true': 0
 @pytest.fixture
 def user_analytics(monkeypatch):
     monkeypatch.setenv("USER_FILE_PATH", USER_FILE_PATH)
+    monkeypatch.setenv("GEOLITE_DB_PATH", GEOLITE_DB_PATH)
 
     with patch("builtins.open", mock_open(read_data=USER_DATA)) as mock_file, \
          patch("json.load", return_value=json.loads(USER_DATA)) as mock_json_load:

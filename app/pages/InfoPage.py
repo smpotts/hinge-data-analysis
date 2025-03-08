@@ -2,6 +2,9 @@ from dash import html
 import dash_mantine_components as dmc
 
 layout = html.Div([
+    dmc.Text("Info", align="center", style={"fontSize": 28}, weight=500),
+    dmc.Text("This section offers a comprehensive overview of how the project works, what data is available to the user, and how to navigate the app for the best experience."),
+    dmc.Space(h=20),
     dmc.Space(h=10),
     dmc.Text("What This Is", style={"fontSize": 28}, weight=500),
     dmc.Text("This application is meant to help provide meaningful insights about interactions users had with "

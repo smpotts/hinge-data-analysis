@@ -29,19 +29,16 @@ dash.register_page("info", path='/info', layout=InfoPage.layout)
 def get_additional_text(page_name):
     """Helper function to provide context about the different hyperlinks based on the page name."""
     if page_name == "Info":
-        return "Discover detailed insights about the app's features and functionality. This section offers a comprehensive" \
-            " overview of how the project works, what data is available to the user, and how to navigate the app for the best experience."
+        return "Discover detailed insights about the app's features and functionality."
     elif page_name == "Matches":
-        return "Explore in-depth analyses of the users matches and interactions. This section reveals patterns in the user's matching " \
-            "behavior, preferences, and key factors that influence successful connections with potential matches."
+        return "Explore in-depth analyses of the users matches and interactions."
     elif page_name == "User":
-        return "Analyze the user's personal profile and preferences. This section contains insights into how the user's " \
-            "profile is presented, the preferences they've set, and how their interactions shape their experience on the app."
-
+        return "Analyze the user's personal profile and preferences."
 app.layout = html.Div([
-    dmc.Title('Hinge Data Analysis', color="black", size="h1"),
+    dmc.Title('Hinge User Insights', align="center", color="black", size="h1"),
+    dmc.Space(h=10),
+    dmc.Text("Insights into a Hinge User's Experiences", align="center", style={"fontSize": 16}, weight=500, italic=True),
     dmc.Space(h=20),
-    dmc.Text("Insights into a Hinge User's Experiences", style={"fontSize": 24}, weight=500),
     dmc.Text("This project analyzes personal data exported from Hinge to provide valuable insights into the user's "
     "experiences on the platform. By examining the user's profile, dating preferences, and interactions with other users, "
     "the project aims to reveal patterns, trends, and meaningful statistics that enhance the understanding of how users "
@@ -74,9 +71,6 @@ app.layout = html.Div([
     dash.page_container,
 
 ])
-
-
-
 
 if __name__ == '__main__':
     host = os.environ.get("HOST")

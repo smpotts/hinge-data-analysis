@@ -27,6 +27,13 @@ Remove
 The list of Matches provided by Hinge leaves a lot to be desired, which is why I decided to build this project analyzing and visualizing interesting insights from the Hinge data export.
 
 ## How To Run The App
+
+### Setting Up GeoLite2 Database
+1. Create a free MaxMind account: [MaxMind Signup](https://www.maxmind.com/en/geolite2/signup)
+2. Download **GeoLite2-City.mmdb** from [MaxMind](https://www.maxmind.com/en/accounts/current/downloads)
+3. Place `GeoLite2-City.mmdb` in the project "data" directory or update the script to point to its location.
+
+
 The application is a multi page Dash Plotly application that runs in a Docker container on port `8050`. Create a Docker build image with: `docker compose build` and run the app with: `docker compose up -d`. The app will be available at [http://0.0.0.0:8050/](http://0.0.0.0:8050/). To bring the container down, use `docker compose down`.  
 
 The page will render with information about the app and instructions on how to use it. 

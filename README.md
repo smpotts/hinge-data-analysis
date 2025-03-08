@@ -95,6 +95,3 @@ Here are the different scenarios of interactions that occur in the data:
 |  | X | X |  | The user received an incoming like, the user liked the other person back and at least one message was exchanged                                                                                                   |
 |  |  |  | X | The match was removed or "unmatched", can't tell who unmatched who. For some reason, a lot of these exist without any other information and there is no way to tell which interaction it was originally linked to |
 |  | X |  | X | The user received an incoming like, the user liked the other person back, no messages were exchanged, and the match was removed                                                                                   |
-
-## What's next
-I have a long list of enhancements and fixes that I want to do to the application to make it better. To see what's on deck, check out the [Projects](https://github.com/users/smpotts/projects/2) tab in the repo. 

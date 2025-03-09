@@ -55,12 +55,12 @@ class UserAnalytics:
         location = self.get_location_data()
         user_location = {}
 
-        user_location["city"] = location["sublocality"]
+        user_location["city"] = location["cbsa"].split(",")[0]
         user_location["latitude"] = location["latitude"]
         user_location["longitude"] = location["longitude"]
-        user_location["country"] = location["country"]
+        user_location["country"] = location["country_short"]
         user_location["neighborhood"] = location["neighborhood"]
-        user_location["locality"] = location["locality"]
+        user_location["locality"] = location["admin_area_1_short"]
 
         return user_location
 
@@ -90,14 +90,17 @@ class UserAnalytics:
         user_summary["dating_intention"] = profile_data["dating_intention"]
 
         # capture duration paused and on app time
-        user_summary["last_pause_duration"] = _timestamp_durations(
-            leading_timestamp=account_data["last_unpause_time"],
-            lagging_timestamp=account_data["last_pause_time"])
+        # the pause times are only present if the user has paused the app, so have to check their presence first
+        if "last_unpause_time" in account_data and "last_pause_time" in account_data:  
+            user_summary["last_pause_duration"] = _timestamp_durations(
+                leading_timestamp=account_data["last_unpause_time"],
+                lagging_timestamp=account_data["last_pause_time"])
+        else:
+           user_summary["last_pause_duration"] = 0
         
         user_summary["on_app_duration"] = _timestamp_durations(
             leading_timestamp=account_data["last_seen"],
-            lagging_timestamp=account_data["signup_time"],
-            lag_has_microseconds=True)
+            lagging_timestamp=account_data["signup_time"])
 
         return user_summary
     
@@ -208,13 +211,9 @@ def _convert_height(cm):
 
     return feet, remaining_inches 
 
-def _timestamp_durations(leading_timestamp, lagging_timestamp, lag_has_microseconds=False):
-    lead_dt_format = "%Y-%m-%d %H:%M:%S"
-    lag_dt_format = lead_dt_format
-
-    # the signup_time contains microseconds, so this handles that special format 
-    if lag_has_microseconds:
-        lag_dt_format = "%Y-%m-%d %H:%M:%S.%f"
+def _timestamp_durations(leading_timestamp, lagging_timestamp):
+    lead_dt_format = "%Y-%m-%d %H:%M:%S.%f"
+    lag_dt_format = "%Y-%m-%d %H:%M:%S.%f"
 
     # parse timestamps
     lag_time = datetime.strptime(lagging_timestamp, lag_dt_format)

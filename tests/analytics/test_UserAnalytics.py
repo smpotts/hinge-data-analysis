@@ -27,9 +27,9 @@ USER_DATA = '''
     ],
     "account": {
         "signup_time": "2024-01-01 03:27:17.539",
-        "last_pause_time": "2020-09-04 03:04:32",
-        "last_unpause_time": "2020-09-10 16:53:40",
-        "last_seen": "2024-01-17 04:07:39",
+        "last_pause_time": "2020-09-04 03:04:32.765",
+        "last_unpause_time": "2020-09-10 16:53:40.324",
+        "last_seen": "2024-01-17 04:07:39.234",
         "device_platform": "ios",
         "device_os": "16.6.1",
         "device_model": "unknown",
@@ -109,9 +109,9 @@ USER_DATA = '''
     "location": {
         "latitude": 65.00,
         "longitude": 18.00,
-        "country": "Iceland",
-        "locality": "New York",
-        "sublocality": "Brooklyn",
+        "country_short": "US",
+        "admin_area_1_short": "NY",
+        "cbsa": "Brooklyn",
         "neighborhood": "Flatbush"
     }
 }
@@ -186,7 +186,7 @@ def test_location_data(user_analytics):
     locations = user_analytics.get_location_data()
     assert locations["latitude"] == 65.00
     assert locations["longitude"] == 18.00
-    assert locations["country"] == "Iceland"
+    assert locations["country_short"] == "US"
 
 def test_build_user_summary_dict(user_analytics):
     result = user_analytics.build_user_summary_dict()
@@ -208,9 +208,9 @@ def test_build_user_location_dict(user_analytics):
     assert result["city"] == "Brooklyn"
     assert result["latitude"] == 65.00
     assert result["longitude"] == 18.00
-    assert result["country"] == "Iceland"
+    assert result["country"] == "US"
     assert result["neighborhood"] == "Flatbush"
-    assert result["locality"] == "New York"
+    assert result["locality"] == "NY"
     
 def test_count_displayed_attributes(user_analytics):
     result = user_analytics.count_displayed_attributes()

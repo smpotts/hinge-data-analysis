@@ -1,12 +1,52 @@
 import pandas as pd
 import re
-import json
+import json, os
+
+class MatchAnalytics:
+    def __init__(self):
+        self.match_file_path = os.environ.get("MATCH_FILE_PATH")
+
+        if self.match_file_path is None:
+            raise Exception("MATCH_FILE_PATH environment varviable is not set.")
+        
+        if '.json' not in self.match_file_path:
+            raise Exception("The match file needs to be a JSON file.")
+
+        with open(self.match_file_path, 'r') as file:
+            match_data = json.load(file)
+        self.match_data = match_data
+
+    def get_match_data(self):
+        all_matches = []
+        for entry in self.match_data:
+            matches = entry.get("match", [])
+            all_matches.extend(matches)
+        return all_matches
+    
+    def get_block_data(self):
+        all_blocks = []
+        for entry in self.match_data:
+            blocks = entry.get("block", [])
+            all_blocks.extend(blocks)
+        return all_blocks 
+    
+    def get_likes_data(self):
+        all_likes = []
+        for entry in self.match_data:
+            likes = entry.get("like", [])
+            all_likes.extend(likes)
+        return all_likes
+    
+    def get_chat_data(self):
+        # TODO: this is actually getting each message, do we want that?
+        all_chats = []
+        for entry in self.match_data:
+            chats = entry.get("chats", [])
+            all_chats.extend(chats)
+        return all_chats 
 
 
 def prepare_uploaded_match_data(file_path="../data/app_uploaded_files/matches.json"):
-    __validate_upload_file_type(file_path)
-    __validate_match_file_upload(file_path)
-
     with open(file_path, 'r') as file:
         # match upload data is a list of dictionaries
         match_upload_data = json.load(file)
@@ -120,13 +160,3 @@ def __build_comments_list(events):
             likes_w_comments.append(like_event.get('comment'))
 
     return likes_w_comments
-
-
-def __validate_upload_file_type(file_path):
-    if not file_path.endswith('.json'):
-        raise ValueError("Invalid file type. Please upload a JSON file.")
-
-
-def __validate_match_file_upload(file_path):
-    if 'match' not in file_path:
-        raise ValueError("Invalid file name. Please upload a file with 'match' in the file name.")

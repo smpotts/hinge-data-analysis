@@ -88,7 +88,7 @@ def match_duration_hist():
     )
 
 def match_removal_count_scatter():
-    match_rm_counts = pd.DataFrame(match_analytics.get_match_removal_v_count_scatter_data())
+    match_rm_counts = pd.DataFrame(match_analytics.get_match_rm_counts())
 
     fig = px.scatter(
         match_rm_counts,

@@ -1,5 +1,6 @@
 import pytest, os, json
 from unittest.mock import mock_open, patch
+from datetime import datetime
 
 from app.analytics.MatchAnalytics import MatchAnalytics
 
@@ -7,9 +8,10 @@ from app.analytics.MatchAnalytics import MatchAnalytics
 # test values
 #########################################################################################
 MATCH_FILE_PATH = "fake/file/path/matches.json"
-FIRST_MATCH_TIMESTAMP = '2005-04-23 14:53:01'
-FIRST_BLOCK_TIMESTAMP = '2005-04-23 16:32:53'
-FIRST_LIKE_TIMESTAMP = "2012-11-04 03:24:14"
+FIRST_MATCH_TIMESTAMP = '2025-04-23 14:53:01'
+FIRST_CHAT_TIMESTAMP = "2025-04-23 14:53:22"
+FIRST_BLOCK_TIMESTAMP = '2025-04-23 16:32:53'
+FIRST_LIKE_TIMESTAMP = "2025-03-04 03:24:14"
 FIRST_CHAT_MESSAGE = "Hey there!"
 MATCH_DATA = '''
 [
@@ -153,8 +155,30 @@ def test_get_chats(match_analytics):
 
 def test_get_message_count_last_12_months(match_analytics):
     message_counts = match_analytics.get_message_count_last_12_months()
-    print(message_counts)
+    # print(message_counts)
     assert message_counts is not None
     assert len(message_counts) == 3
     assert message_counts[2].get("month") == "2025-04"
     assert message_counts[2].get("message_count") == 4
+
+def test_get_response_latency(match_analytics):
+    latency_data = match_analytics.get_response_latency()
+    # print(latency_data)
+    assert latency_data[0].get("latency_days") == 0.00024305555555555555
+    assert latency_data[0].get("match_time") == datetime.fromisoformat(FIRST_MATCH_TIMESTAMP)
+    assert latency_data[0].get("first_message_time") == datetime.fromisoformat(FIRST_CHAT_TIMESTAMP)
+
+def test_get_match_durations(match_analytics):
+    match_durations = match_analytics.get_match_durations()
+    # print(match_durations)
+
+    assert len(match_durations) == 3
+    assert isinstance(match_durations, list)
+    assert match_durations[2].get("duration_days") == 8
+
+def test_get_match_rm_counts(match_analytics):
+    match_rm_counts = match_analytics.get_match_rm_counts()
+
+    # print(match_rm_counts)
+    assert match_rm_counts[2].get("message_count") == 4
+    assert match_rm_counts[2].get("duration_days") == 8

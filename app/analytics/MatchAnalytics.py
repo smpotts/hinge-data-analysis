@@ -97,7 +97,7 @@ class MatchAnalytics:
                 })
         return durations
 
-    def get_match_removal_v_count_scatter_data(self):
+    def get_match_rm_counts(self):
         records = []
 
         for entry in self.match_data:

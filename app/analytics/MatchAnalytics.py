@@ -1,5 +1,3 @@
-import pandas as pd
-import re
 import json, os
 from datetime import datetime, timedelta
 
@@ -62,3 +60,60 @@ class MatchAnalytics:
                         "message_count": len(chats)
                     })
         return msg_counts_per_month
+
+    def get_response_latency(self):
+        latency_data = []
+        for entry in self.match_data:
+            match = entry.get("match", [])
+            chats = entry.get("chats", [])
+
+            if match and chats:
+                match_time = datetime.fromisoformat(match[0]["timestamp"])
+                first_message_time = datetime.fromisoformat(chats[0]["timestamp"])
+                latency = (first_message_time - match_time).total_seconds() / (3600 * 24)
+
+                latency_data.append({
+                    "match_time": match_time,
+                    "first_message_time": first_message_time,
+                    "latency_days": latency
+                })
+        return latency_data
+    
+    def get_match_durations(self):
+        durations = []
+        for entry in self.match_data:
+            match = entry.get("match", [])
+            block = entry.get("block", [])
+
+            if match and block:
+                match_time = datetime.fromisoformat(match[0]["timestamp"])
+                block_time = datetime.fromisoformat(block[0]["timestamp"])
+                duration_days = (block_time - match_time).days
+
+                durations.append({
+                    "match_time": match_time,
+                    "block_time": block_time,
+                    "duration_days": duration_days
+                })
+        return durations
+
+    def get_match_removal_v_count_scatter_data(self):
+        records = []
+
+        for entry in self.match_data:
+            match_time = entry.get("match", [{}])[0].get("timestamp")
+            block_time = entry.get("block", [{}])[0].get("timestamp")
+            chats = entry.get("chats", [])
+
+            if match_time and block_time:
+                match_dt = datetime.fromisoformat(match_time)
+                block_dt = datetime.fromisoformat(block_time)
+                delta_days = (block_dt - match_dt).days
+                message_count = len(chats)
+
+                records.append({
+                    "message_count": message_count,
+                    "duration_days": delta_days
+                })
+
+        return records

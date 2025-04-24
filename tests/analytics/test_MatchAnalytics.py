@@ -16,77 +16,77 @@ MATCH_DATA = '''
     {
         "match": [
             {
-                "timestamp": "2005-04-23 14:53:01"
+                "timestamp": "2025-04-23 14:53:01"
             }
         ],
         "chats": [
             {
                 "body": "Hey there!",
-                "timestamp": "2005-04-23 14:53:22"
+                "timestamp": "2025-04-23 14:53:22"
             }
         ],
         "block": [
             {
                 "block_type": "remove",
-                "timestamp": "2005-04-23 16:32:53"
+                "timestamp": "2025-04-23 16:32:53"
             }
         ]
     },
     {
         "match": [
             {
-                "timestamp": "2006-08-06 23:08:31"
+                "timestamp": "2025-03-06 23:08:31"
             }
         ],
         "chats": [
             {
                 "body": "What's up?",
-                "timestamp": "2006-08-06 23:11:04"
+                "timestamp": "2025-03-06 23:11:04"
             }
         ],
         "block": [
             {
                 "block_type": "remove",
-                "timestamp": "2006-09-15 16:32:49"
+                "timestamp": "2025-03-15 16:32:49"
             }
         ]
     },
     {
         "match": [
             {
-                "timestamp": "2013-05-06 23:09:16"
+                "timestamp": "2025-04-06 23:09:16"
             }
         ],
         "chats": [
             {
                 "body": "Hi!",
-                "timestamp": "2013-05-06 23:09:52"
+                "timestamp": "2025-04-06 23:09:52"
             },
             {
                 "body": "Here's another message",
-                "timestamp": "2013-05-09 02:41:05"
+                "timestamp": "2025-04-09 02:41:05"
             },
             {
                 "body": "And another message!",
-                "timestamp": "2013-05-10 12:27:21"
+                "timestamp": "2025-04-10 12:27:21"
             },
             {
                 "body": "And one last message",
-                "timestamp": "2013-05-10 12:27:00"
+                "timestamp": "2025-04-10 12:27:00"
             }
         ],
         "block": [
             {
                 "block_type": "remove",
-                "timestamp": "2013-06-15 16:32:45"
+                "timestamp": "2025-04-15 16:32:45"
             }
         ],
         "like": [
             {
-                "timestamp": "2012-11-04 03:24:14",
+                "timestamp": "2025-03-04 03:24:14",
                 "like": [
                     {
-                        "timestamp": "2012-11-04 03:24:14"
+                        "timestamp": "2025-03-04 03:24:14"
                     }
                 ]
             }
@@ -150,3 +150,11 @@ def test_get_chats(match_analytics):
     chats = match_analytics.get_chat_data()
     assert len(chats) == 6
     assert chats[0].get("body") == FIRST_CHAT_MESSAGE
+
+def test_get_message_count_last_12_months(match_analytics):
+    message_counts = match_analytics.get_message_count_last_12_months()
+    print(message_counts)
+    assert message_counts is not None
+    assert len(message_counts) == 3
+    assert message_counts[2].get("month") == "2025-04"
+    assert message_counts[2].get("message_count") == 4

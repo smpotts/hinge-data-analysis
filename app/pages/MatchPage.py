@@ -54,13 +54,13 @@ def response_latency_hist():
             dmc.Text("Response Latency between Match and First Message Sent", weight=700, size="xl"),
             dmc.Space(h=10),
             dmc.Text("This graph visualizes the response latency, or the time delay between when a match occurs and when the first message is sent." \
-            "Shorter latencies may indicate higher levels of engagement or interest, while longer delays could suggest hesitation, lower enthusiasm, or forgotten matches.", size="md"),
+            " Shorter latencies may indicate higher levels of engagement or interest, while longer delays could suggest hesitation, lower enthusiasm, or forgotten matches.", size="md"),
             dmc.Space(h=10),
             dcc.Graph(figure=fig)  
         ],
         shadow="sm",
         radius="md",
-        style={"height": "520px"},
+        style={"height": "550px"},
     )
 
 def match_duration_hist():
@@ -77,14 +77,14 @@ def match_duration_hist():
             dmc.Text("Duration of Time Between Match and Remove", weight=700, size="xl"),
             dmc.Space(h=10),
             dmc.Text("This histogram visualizes the duration of a connection and when it was removed or blocked." \
-            "Short durations might reflect mismatched expectations, ghosting, or immediate disinterest, while longer " \
+            " Short durations might reflect mismatched expectations, ghosting, or immediate disinterest, while longer " \
             "durations may point to sustained conversations or lingering connections that eventually tapered off. ", size="md"),
             dmc.Space(h=10),
             dcc.Graph(figure=fig)  
         ],
         shadow="sm",
         radius="md",
-        style={"height": "520px"},
+        style={"height": "550px"},
     )
 
 def match_removal_count_scatter():

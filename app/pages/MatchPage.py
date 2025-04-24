@@ -1,168 +1,133 @@
-from dash import html
+from dash import html, dcc
+import pandas as pd
 import dash_mantine_components as dmc
-from dash import dcc, dash_table, Input, Output, callback
 import plotly.express as px
-from dash.exceptions import PreventUpdate
 
-import analytics.MatchAnalytics as ma
+from analytics.MatchAnalytics import MatchAnalytics
+
+match_analytics = MatchAnalytics()
+
+def message_counts_boxplot():
+    message_counts = match_analytics.get_message_count_last_12_months()
+
+    df = pd.DataFrame(message_counts)
+    # change the month to a date so we can sort it and then convert it back to a string
+    df["month"] = pd.to_datetime(df["month"])
+    df = df.sort_values("month")
+    df["month"] = df["month"].dt.strftime("%Y-%m")
+
+    fig = px.box(
+        df,
+        x="month",
+        y="message_count",
+        height=600, # increase height
+        labels={"month": "Month", "message_count": "Number of Messages"},
+        points="all"  # show individual data points too
+    )
+    fig.update_layout(xaxis_tickangle=-45)
+
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Message Count Variability by Month (Last 12 Months)", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This box plot shows how the number of messages exchanged per match varies across each month over the past year. Each box represents the distribution of message counts for matches that had at least one message in that month. The plot highlights patterns in user engagement, such as which months tend to have higher or lower activity, and reveals any outliers — matches with unusually high or low message counts. This can be useful for identifying seasonal trends or behavioral shifts in how users interact over time.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        shadow="sm",
+        radius="md",
+        style={"height": "750px"},
+    )
+
+def response_latency_hist():
+    latency_data = match_analytics.get_response_latency()
+    fig = px.histogram(
+        latency_data,
+        x="latency_days",
+        nbins=20,
+        labels={"latency_days": "Latency (days)"}
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Response Latency between Match and First Message Sent", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This graph visualizes the response latency, or the time delay between when a match occurs and when the first message is sent." \
+            "Shorter latencies may indicate higher levels of engagement or interest, while longer delays could suggest hesitation, lower enthusiasm, or forgotten matches.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        shadow="sm",
+        radius="md",
+        style={"height": "520px"},
+    )
+
+def match_duration_hist():
+    durations = match_analytics.get_match_durations()
+
+    fig = px.histogram(
+        durations,
+        x="duration_days",
+        labels={"duration_days": "Duration (days)"}
+    )
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Duration of Time Between Match and Remove", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This histogram visualizes the duration of a connection and when it was removed or blocked." \
+            "Short durations might reflect mismatched expectations, ghosting, or immediate disinterest, while longer " \
+            "durations may point to sustained conversations or lingering connections that eventually tapered off. ", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        shadow="sm",
+        radius="md",
+        style={"height": "520px"},
+    )
+
+def match_removal_count_scatter():
+    match_rm_counts = pd.DataFrame(match_analytics.get_match_rm_counts())
+
+    fig = px.scatter(
+        match_rm_counts,
+        x="message_count",
+        y="duration_days",
+        labels={
+            "message_count": "Messages Exchanged",
+            "duration_days": "Days Between Match and Removal"
+        },
+        opacity=0.7
+    )
+    fig.update_traces(marker=dict(size=10))
+
+    return dmc.Card(
+        children=[
+            dmc.Space(h=10),
+            dmc.Text("Match Duration vs. Message Count", weight=700, size="xl"),
+            dmc.Space(h=10),
+            dmc.Text("This scatter plot explores the relationship between the number of messages exchanged in a match and the time until the match was removed or blocked. " \
+            "Clusters near the bottom-left corner indicate 'early exits' — matches that were short-lived and involved little to no conversation, often pointing to ghosting or " \
+            "instant disengagement. Conversely, matches in the top-right show more sustained interactions before ending.", size="md"),
+            dmc.Space(h=10),
+            dcc.Graph(figure=fig)  
+        ],
+        shadow="sm",
+        radius="md",
+        style={"height": "600px"},
+    )
 
 
-global normalized_events
-
-
-def serve_layout():
-    return html.Div([
-        # TODO: need to remove the button, but it has dependencies with the charts so will leave it until I can redo the charts
-        html.Button('Reload Graphs', id='refresh-page', style={"fontSize": 16, 'font-family': "Open Sans, verdana, arial, sans-serif"}),
-        dmc.Space(h=20),
-
+layout = html.Div([
         dmc.Text("Match Analytics", align="center", style={"fontSize": 28}, weight=500),
         dmc.Text("This section reveals patterns in the user's matching behavior, preferences, and key factors that influence successful connections with potential matches."),
         dmc.Space(h=20),
-
-        # funnel graph showing breakdown of interactions
-        dmc.Text("Interaction Funnel", size="xl", align="left", weight=500),
-        dmc.Text("This funnel represents the funnel of your interactions with people on Hinge. The outermost layer "
-                 "represents the total number of people you interacted with. Then it shows the number of outgoing likes "
-                 "you sent, matches received, and conversations started from those matches.", align="left"),
-        html.Div([
-            dcc.Graph(id='live-update-graph'),
-        ]),
-
-        # side by side pie charts drilling into specifics of outgoing likes
-        dmc.Text("Outgoing Likes You've Sent", size="xl", align="left", weight=500),
-        dmc.Text("This is a deep dive into your outgoing likes. The pie chart on the left shows a breakdown of the rare"
-                 " cases where Hinge shows you a users you have already sent an outgoing like to vs the users you liked"
-                 " once. The pie chart on the right shows how many outgoing likes you sent where you left a comment on the"
-                 " other person's profile.", align="left"),
-        html.Div(className='row', children=[
-            html.Div(className='six columns', children=[
-            dcc.Graph(id="live-update-double-likes-graph", style={'width': '50%', 'display': 'inline-block'}),
-            dcc.Graph(id="live-update-commented-likes-graph", style={'width': '50%', 'display': 'inline-block'})
-            ]),
-        ]),
-
-        # table showing like comments
-        dmc.Text("What You're Commenting When You Like Someone's Content", size="xl", align="left", weight=500),
-        html.Div([
-            dash_table.DataTable(id='datatable-interactivity'),
-            html.Div(id='datatable-interactivity-container'),
-        ]),
-
-        # line chart showing activity type frequencies by day
-        dmc.Text("Frequency of Action Types by Day", size="xl", align="left", weight=500),
-        dmc.Text("This line graph displays the counts of each action type (likes, matches, chats, and blocks aka unmatches)"
-                 " per day over the duration of time you have been on Hinge. The legend on the right lists each of the"
-                 " different action types, and you can select/ unselect different types to look at particular ones.",
-                 align="left"),
-        dcc.Graph("live-update-action_types-graph"),
-
-        # pie chart showing percentage of interactions with a phone number share
-        dmc.Text("How Many People Did You Give Your Number To?", size="xl", align="left", weight=500),
-        dmc.Text("This is the ratio of people you shared your phone number with out of the total number of people you "
-                 "had chats with. This operates on the assumption you gave your phone number in a standard format, "
-                 "ex: XXX-XXX-XXXX, XXXXXXXXXX, or (XXX)XXX-XXXX.",
-                 align="left"),
-        dcc.Graph("live-update-number_shares-graph"),
-
-        # histogram showing the number of outgoing messages in each chat
-        dmc.Text("Outgoing Messages Sent per Chat", size="xl", align="left", weight=500),
-        dmc.Text("This histogram shows the number of outgoing messages you sent in each chat.",
-                 align="left"),
-        dcc.Graph("live-update-messages-per-chat-graph"),
+        message_counts_boxplot(),
+        dmc.Space(h=20),
+        response_latency_hist(),
+        dmc.Space(h=20),
+        match_duration_hist(),
+        dmc.Space(h=20),
+        match_removal_count_scatter()
     ])
-
-
-@callback(
-    Output('live-update-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_graph_live(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.funnel(ma.total_counts(normalized_events), x=ma.total_counts(normalized_events)["count"],
-                               y=ma.total_counts(normalized_events)["action_type"],
-                               labels={'y': 'interaction count'})
-
-
-@callback(
-    Output('live-update-double-likes-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_double_likes_pie(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.pie(ma.analyze_double_likes(normalized_events), values="Count", names="Like Frequency",
-                                title="Number of Outgoing Likes per Person")
-
-
-@callback(
-    Output('live-update-commented-likes-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_commented_likes_pie(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.pie(ma.like_comment_ratios(normalized_events), values="Count", names="Likes With/ Without Comments",
-                                title="Outgoing Likes with Comments")
-
-
-@callback(
-    Output('live-update-action_types-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_action_types_graph(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.line(ma.activity_by_date(normalized_events),
-                             x=ma.activity_by_date(normalized_events)['activity_date'],
-                             y=ma.activity_by_date(normalized_events)['count'],
-                             color=ma.activity_by_date(normalized_events)['type'],
-                             labels={'x': 'activity_date', 'y': 'count'})
-
-
-@callback(
-    Output('live-update-number_shares-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_number_shares_graph(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.pie(ma.phone_number_shares(normalized_events), values="Count", names="Message Outcomes")
-
-
-@callback(
-    Output('live-update-messages-per-chat-graph', 'figure'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_messages_per_chat_graph(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    return px.histogram(ma.date_count_distribution(normalized_events), x='outgoing_messages', nbins=50).update_layout(bargap=0.2)
-
-
-@callback(
-    Output('datatable-interactivity-container', 'children'),
-    [Input('refresh-page', 'n_clicks')]
-)
-def update_comment_table(data):
-    __check_for_live_update_data(data)
-    __setup_global_norm_events()
-    commented_outgoing_likes_data = ma.commented_outgoing_likes(normalized_events).to_dict('records')
-    return [
-        dash_table.DataTable(data=commented_outgoing_likes_data, page_size=10,
-                             style_cell={'textAlign': 'left'})
-       ]
-
-
-layout = serve_layout()
-
-
-def __setup_global_norm_events(file_path="../data/app_uploaded_files/matches.json"):
-    global normalized_events
-    normalized_events = ma.prepare_uploaded_match_data(file_path)
-
-
-def __check_for_live_update_data(data):
-    if data is None:
-        raise PreventUpdate

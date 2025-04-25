@@ -83,6 +83,8 @@ This bar chart compares the number of 'dealbreakers' versus 'open' preferences a
 ![Dating Prefs](mock_screenshots/dating_prefs.png)
 
 ### Match Analysis
+This section reveals patterns in the user's matching behavior, preferences, and key factors that influence successful connections with potential matches.
+
 #### Message Count Variability by Month (Last 12 Months)
 This box plot shows how the number of messages exchanged per match varies across each month over the past year. 
 

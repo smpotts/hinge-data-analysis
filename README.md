@@ -14,7 +14,7 @@ app/
 │   └── MatchAnalytics.py
 │   └── UserAnalytics.py
 
-├── assets/           # Contains image files copied from the media folder in the export
+├── assets/              # Contains image files copied from the media folder in the export
 
 ├── pages/               # Visualization rendering and user interface
 │   ├── __init__.py
@@ -109,7 +109,7 @@ This scatter plot explores the relationship between the number of messages excha
 
 ## How to Use
 1. Export your data from Hinge
-2. Install dependencies
+2. Install dependencies  
 (Using a virtual environment is recommended)  
 `pip install -r requirements.txt`
 3. Create a root level folder named `data` and copy the `export` folder from the data export inside the `data` folder. This should contain:  

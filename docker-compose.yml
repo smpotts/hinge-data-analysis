@@ -3,6 +3,8 @@ version: '3.8'
 services:
   web:
     build: .
+    env_file:
+      - .env
     container_name: hinge_analyzer_app
     ports:
       - "8050:8050"  # Map port 8050 of the host to port 8050 of the container

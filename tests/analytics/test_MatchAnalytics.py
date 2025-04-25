@@ -119,7 +119,7 @@ def test_match_file_path_not_set():
     if "MATCH_FILE_PATH" in os.environ:
         del os.environ["MATCH_FILE_PATH"]
     
-    with pytest.raises(Exception, match="MATCH_FILE_PATH environment varviable is not set."):
+    with pytest.raises(Exception, match="MATCH_FILE_PATH environment variable is not set."):
         MatchAnalytics()
 
 def test_match_file_not_json():

@@ -62,7 +62,7 @@ def stringency_vs_flexibility():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"height": "520px"},
+        style={"height": "600px"},
     )
 
 def geolocation():
@@ -174,7 +174,7 @@ def disclosure_vs_privacy():
             dmc.Space(h=10),
             dmc.Text("How much information does this user choose to share vs. keep private?", weight=700, size="xl"),
             dmc.Space(h=10),
-            dmc.Text("Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc. and helps identify if the user is open vs. private about certain topics.", size="md"),
+            dmc.Text("Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc.), and helps identify if the user is open vs. private about certain topics.", size="md"),
             dmc.Space(h=10),
             dcc.Graph(figure=fig)  
         ],

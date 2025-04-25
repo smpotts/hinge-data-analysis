@@ -62,50 +62,50 @@ This section contains insights into how the user's profile is presented, the pre
 These slides show basic user information that was uploaded to Hinge including uploaded photos, demographic information about the user, and information about the user's location.
 
 *Example visualization*
-![User slides](screenshots/user_slides.png)
+![User slides](mock_screenshots/user_slides.png)
 
 #### Profile Information Visibility
 Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc.), and helps identify if the user is open vs. private about certain topics.
 
 *Example visualization*
-![Profile Info Vis](screenshots/profile_info_vis.png)
+![Profile Info Vis](mock_screenshots/profile_info_vis.png)
 
 #### Comparison Between The User and Their Preferences
 This shows potential alignment or misalignment between the users profile and their preferences.
 
 *Example visualization*
-![User and Pref Comp](screenshots/com_bet_user_and_prefs.png)
+![User and Pref Comp](mock_screenshots/com_bet_user_and_prefs.png)
 
 #### Dating Preferences: Dealbreakers vs Open Choices
 This bar chart compares the number of 'dealbreakers' versus 'open' preferences across different dating categories, highlighting which factors are most important or flexible in the user's online dating criteria.
 
 *Example visualization*
-![Dating Prefs](screenshots/dating_prefs.png)
+![Dating Prefs](mock_screenshots/dating_prefs.png)
 
 ### Match Analysis
 #### Message Count Variability by Month (Last 12 Months)
 This box plot shows how the number of messages exchanged per match varies across each month over the past year. 
 
 *Example visualization*
-![Message Count Var](screenshots/msg_count_boxplot.png)
+![Message Count Var](mock_screenshots/msg_count_boxplot.png)
 
 #### Response Latency between Match and First Message Sent
 This graph visualizes the response latency, or the time delay between when a match occurs and when the first message is sent.
 
 *Example visualization*
-![Response Latency](screenshots/resp_latency.png)
+![Response Latency](mock_screenshots/resp_latency.png)
 
 #### Duration of Time Between Match and Remove
 This histogram visualizes the duration of a connection and when it was removed or blocked. 
 
 *Example visualization*
-![Match Rm Duration](screenshots/duration_match_rm.png)
+![Match Rm Duration](mock_screenshots/duration_match_rm.png)
 
 #### Match Duration vs. Message Count
 This scatter plot explores the relationship between the number of messages exchanged in a match and the time until the match was removed or blocked. 
 
 *Example visualization*
-![Duration V Count](screenshots/duration_v_count.png)
+![Duration V Count](mock_screenshots/duration_v_count.png)
 
 ## How to Use
 1. Export your data from Hinge

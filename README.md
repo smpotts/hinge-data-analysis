@@ -115,15 +115,15 @@ This scatter plot explores the relationship between the number of messages excha
 3. Create a root level folder named `data` and copy the `export` folder from the data export inside the `data` folder. This should contain:  
 - `media/`
 - `user.json`
-- `match.json`
+- `match.json`  
 All of these are utilized by the project.
 4. Create a `.env` file and set environment variables for the following:
 - `USER_FILE_PATH`
 - `MATCH_FILE_PATH`  
 Refer to the `.env-defaults` file for details.
 5. The Flask app can be run in two ways:  
-    1. Running the app locally
+    1. Running the app locally:  
         `python app/main.py`
-    2. Running the app with Docker Compose
-        `docker compose build`
+    2. Running the app with Docker Compose:  
+        `docker compose build`  
         `docker compose up -d`

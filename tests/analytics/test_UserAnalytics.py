@@ -132,10 +132,11 @@ def user_analytics(monkeypatch):
     monkeypatch.setenv("ASSETS_PATH", ASSETS_PATH)
     monkeypatch.setenv("MEDIA_PATH", MEDIA_PATH)
 
-    with patch("builtins.open", mock_open(read_data=USER_DATA)) as mock_file, \
-         patch("json.load", return_value=json.loads(USER_DATA)) as mock_json_load, \
+    with patch("builtins.open", mock_open(read_data=USER_DATA)), \
+         patch("json.load", return_value=json.loads(USER_DATA)), \
          patch("os.makedirs"), \
-         patch("os.listdir", return_value=[]):  # prevent actual file ops
+         patch("os.listdir", return_value=[]), \
+         patch("shutil.copy2"):
 
         user_analytics = UserAnalytics()
     return user_analytics

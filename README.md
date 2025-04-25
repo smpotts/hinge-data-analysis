@@ -14,7 +14,7 @@ app/
 │   └── MatchAnalytics.py
 │   └── UserAnalytics.py
 
-├── analytics/           # Contains image files copied from the media folder in the export
+├── assets/           # Contains image files copied from the media folder in the export
 
 ├── pages/               # Visualization rendering and user interface
 │   ├── __init__.py
@@ -22,10 +22,6 @@ app/
 │   └── InfoPage.py
 │   └── MatchPage.py
 │   └── UserPage.py
-
-├── tools/               # Misc. tools
-│   ├── __init__.py
-│   └── Logger.py
 
 ├── utilities/           # Helper functions, constants, config, and utilities
 │   ├── __init__.py
@@ -39,7 +35,7 @@ tests/                   # Unit and integration tests
 │   └── test_UserAnalytics.py
 
 data/                    # Local storage for raw data from the personal export
-└── export 
+└── export/ 
 │   ├── media/           # Images that were uploaded to Hinge
 │   └── matches.json
 │   └── user.json
@@ -50,7 +46,7 @@ data/                    # Local storage for raw data from the personal export
 
 README.md                # Project overview and instructions
 requirements.txt         # Python dependencies
-.env                     # Environment variables (e.g., MATCH_FILE_PATH)
+.env                     # Environment variables 
 Dockerfile               # Dockerfile
 docker-compose.yml       # Docker Compose configuration 
 LICENSE                  # Project license

@@ -9,8 +9,10 @@ from analytics.UserAnalytics import UserAnalytics
 BLUE = "#3BAAC4"
 REDISH = "#C4553B"
 
+user_analytics = UserAnalytics()
+
 def stringency_vs_flexibility():
-    dealbreaker_counts = UserAnalytics().count_stringeny_attributes()
+    dealbreaker_counts = user_analytics.count_stringeny_attributes()
 
     category_labels = {
         "physical": "Age & Height",
@@ -60,11 +62,11 @@ def stringency_vs_flexibility():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"height": "520px"},
+        style={"height": "600px"},
     )
 
 def geolocation():
-    df = UserAnalytics().collect_location_from_ip()
+    df = user_analytics.collect_location_from_ip()
     fig = px.scatter_geo(
         df,
         lat="latitude",
@@ -92,14 +94,14 @@ def geolocation():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"height": "520px"},
+        style={"height": "550px"},
     )
 
 def potential_misalignments():
     # define categories
     categories = ["Religion", "Ethnicity", "Smoking", "Drinking", "Marijuana", "Drugs", "Children", "Family Plans", "Education", "Politics"]
 
-    profile_selections, preferences_selections = UserAnalytics().profile_preference_selections() 
+    profile_selections, preferences_selections = user_analytics.profile_preference_selections() 
 
     # create table with two data columns
     fig = go.Figure(data=[go.Table(
@@ -111,7 +113,7 @@ def potential_misalignments():
                 align="left")
     )])
 
-    fig.update_layout(title="Profile Visibility Comparison Between User A and User B")
+    fig.update_layout(title="Profile Visibility Comparison Between The User and Their Preferences")
 
     return dmc.Card(
         children=[
@@ -130,7 +132,7 @@ def potential_misalignments():
 
 
 def disclosure_vs_privacy():
-    category_counts = UserAnalytics().count_displayed_attributes()
+    category_counts = user_analytics.count_displayed_attributes()
 
     category_labels = {
         "identity": "Identity & Demographics",
@@ -172,7 +174,7 @@ def disclosure_vs_privacy():
             dmc.Space(h=10),
             dmc.Text("How much information does this user choose to share vs. keep private?", weight=700, size="xl"),
             dmc.Space(h=10),
-            dmc.Text("Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc. and helps identify if the user is open vs. private about certain topics.", size="md"),
+            dmc.Text("Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc.), and helps identify if the user is open vs. private about certain topics.", size="md"),
             dmc.Space(h=10),
             dcc.Graph(figure=fig)  
         ],
@@ -183,7 +185,7 @@ def disclosure_vs_privacy():
     )
 
 def user_photo_slideshow():
-    jpg_files = UserAnalytics().get_media_file_paths()
+    jpg_files = user_analytics.get_media_file_paths()
 
     return dmc.Card(
         children=[
@@ -196,7 +198,7 @@ def user_photo_slideshow():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"width": "500px", "height": "520px", "padding": "20px"},
+        style={"width": "500px", "height": "550px", "padding": "20px"},
     )
 
 @callback(
@@ -210,7 +212,7 @@ def update_image(n_intervals, jpg_files):
 
 
 def create_user_location_card():
-    user_location = UserAnalytics().build_user_location_dict()
+    user_location = user_analytics.build_user_location_dict()
 
     fig = px.scatter_mapbox(
         lat=[user_location["latitude"]],
@@ -239,12 +241,12 @@ def create_user_location_card():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"width": "500px", "height": "520px"},
+        style={"width": "500px", "height": "550px"},
     )
 
 
 def create_user_summary_card():
-    user_summary = UserAnalytics().build_user_summary_dict()
+    user_summary = user_analytics.build_user_summary_dict()
     
     return dmc.Card(
         children=[
@@ -268,7 +270,7 @@ def create_user_summary_card():
         withBorder=True,
         shadow="sm",
         radius="md",
-        style={"width": "500px", "padding": "20px", "height": "520px"},
+        style={"width": "500px", "padding": "20px", "height": "550px"},
     )
 
 layout = html.Div([
@@ -291,7 +293,7 @@ layout = html.Div([
             span=4  
          )
     ],
-    style={"height": "50vh"}  ),
+    style={"height": "60vh"}  ),
     dmc.Space(h=120),
     disclosure_vs_privacy(),
     potential_misalignments(),

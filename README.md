@@ -1,97 +1,133 @@
-## Overview
-Hinge allows users to request an export of their personal data that was collected while they were using the app. If you have a Hinge account, you can request your data by going to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and once the data are ready, Hinge provides a `.zip` file with your personal data.
+# Hinge Data Analysis
+## Purpose
+This project analyzes personal data exported from Hinge to provide valuable insights into the user's experiences on the platform. By examining the user's profile, dating preferences, and interactions with other users, the project aims to reveal patterns, trends, and meaningful statistics that enhance the understanding of how users engage with Hinge and make decisions based on their preferences.
 
-### The Data Export Provided by Hinge
-The data export provided by Hinge contains several files, but the main thing is the `index.html` file, which is used to render a web page with tabs showing different data. The tabs provided by Hinge are labeled: User, Matches, Prompts, Media, Subscriptions, Fresh Starts, and Selfie Verification. Aside from viewing changes to your prompts or seeing which pictures you've uploaded, these data are not particularly useful, especially on the Matches tab which should be the most interesting part.
+### Getting Your Personal Data
+Hinge allows active users to request an export of their personal data that were collected while they have had an account. If you have a Hinge account, you can request your data by going to Settings -> Download My Data. It typically takes between 24 and 48 hours to fulfill this request, and once the data are ready, Hinge provides a `.zip` file with your personal data.
 
-The Matches tab in the Hinge export contains a list of "Matches", or rather "interactions" as I call them in this project, like this:
+## Project Structure
+This is the structure of the project and what each section does at a high level.
+```bash
+app/
+├── analytics/           # Core application logic and data analysis for users and matches
+│   ├── __init__.py
+│   └── MatchAnalytics.py
+│   └── UserAnalytics.py
 
-**Match # 1**
-2024-01-22 20:13:22
-Like
+├── analytics/           # Contains image files copied from the media folder in the export
 
-**Match # 2**
-2024-01-23 20:15:42
-Like
+├── pages/               # Visualization rendering and user interface
+│   ├── __init__.py
+│   └── HomePage.py
+│   └── InfoPage.py
+│   └── MatchPage.py
+│   └── UserPage.py
 
-**Match # 3**
-2024-01-23 20:37:27
-Match
+├── tools/               # Misc. tools
+│   ├── __init__.py
+│   └── Logger.py
 
-2024-01-23 20:39:45
-Chat: Hello, World!
+├── utilities/           # Helper functions, constants, config, and utilities
+│   ├── __init__.py
+│   └── DataUtility.py
 
-2024-01-23 21:49:26
-Remove
+tests/                   # Unit and integration tests
+├── __init__.py
+└── analytics 
+│   ├── __init__.py
+│   └── test_MatchAnalytics.py
+│   └── test_UserAnalytics.py
 
-The list of Matches provided by Hinge leaves a lot to be desired, which is why I decided to build this project analyzing and visualizing interesting insights from the Hinge data export.
+data/                    # Local storage for raw data from the personal export
+└── export 
+│   ├── media/           # Images that were uploaded to Hinge
+│   └── matches.json
+│   └── user.json
+│   └── media.json
+│   └── prompts.json
+│   └── prompt_feedback.json
+│   └── selfie_verification.json
 
-## How To Run The App
+README.md                # Project overview and instructions
+requirements.txt         # Python dependencies
+.env                     # Environment variables (e.g., MATCH_FILE_PATH)
+Dockerfile               # Dockerfile
+docker-compose.yml       # Docker Compose configuration 
+LICENSE                  # Project license
+```
 
-### Setting Up GeoLite2 Database
-1. Create a free MaxMind account: [MaxMind Signup](https://www.maxmind.com/en/geolite2/signup)
-2. Download **GeoLite2-City.mmdb** from [MaxMind](https://www.maxmind.com/en/accounts/current/downloads)
-3. Place `GeoLite2-City.mmdb` in the project "data" directory or update the script to point to its location.
+## Analysis Breakdown
+The application is divided into two main sections, each providing distinct insights into the user's Hinge usage.
 
+### User Analysis
+This section contains insights into how the user's profile is presented, the preferences they've set, and how their interactions shape their experience on the app.
 
-The application is a multi page Dash Plotly application that runs in a Docker container on port `8050`. Create a Docker build image with: `docker compose build` and run the app with: `docker compose up -d`. The app will be available at [http://0.0.0.0:8050/](http://0.0.0.0:8050/). To bring the container down, use `docker compose down`.  
+#### User Uploaded Photos, User Demographics & User Location
+These slides show basic user information that was uploaded to Hinge including uploaded photos, demographic information about the user, and information about the user's location.
 
-The page will render with information about the app and instructions on how to use it. 
+*Example visualization*
+![User slides](screenshots/user_slides.png)
 
-The "Upload Files" section allows users to upload a `matches.json` or `user.json` file for analysis. **At the moment, the program expects the file to be called `matches.json` or `user.json`, as they are in the export provided by Hinge.** After a file has been selected, it should show the uploaded file name(s) under the upload box.
+#### Profile Information Visibility
+Looks at displayed vs. not displayed attributes (ethnicity, religion, workplaces, dating intentions etc.), and helps identify if the user is open vs. private about certain topics.
 
-[![Screenshot-2024-05-25-at-10-12-48.png](https://i.postimg.cc/KcV1SFcQ/Screenshot-2024-05-25-at-10-12-48.png)](https://postimg.cc/hhLDTkd7)
+*Example visualization*
+![Profile Info Vis](screenshots/profile_info_vis.png)
 
-The "Data Insights" section contains links to display pages with data related to match data or user data. Click on "Matches" or "Users" to show the information and graphs for either topic. The visualizations will initially show as blank graphs until a file has been upload and the graphs have been reloaded. Clicking the "Reload Graphs" button will regenerate the graphs with the uploaded data.
+#### Comparison Between The User and Their Preferences
+This shows potential alignment or misalignment between the users profile and their preferences.
 
-## Match Analytics
-The match analytics page contains several graphs that show different aspects of the match data. Hinge only provides data on the user's actions for privacy reasons, so most of the data pertains to how the user interacted with other users.
+*Example visualization*
+![User and Pref Comp](screenshots/com_bet_user_and_prefs.png)
 
-The first graph is the **Interaction Funnel**, which is a visualization of the different types of interactions that occurred between the user and other users. The outermost part of the funnel "Distinct Interactions" is the total number of unique interactions that occurred. This is a combination of likes the user received and did not reciprocate, likes the user sent and were not reciprocated, and likes the user sent that lead to matches and chats.
+#### Dating Preferences: Dealbreakers vs Open Choices
+This bar chart compares the number of 'dealbreakers' versus 'open' preferences across different dating categories, highlighting which factors are most important or flexible in the user's online dating criteria.
 
-The funnel is a good way to see how many interactions were initiated by the user and how many lead to matches and conversations.
+*Example visualization*
+![Dating Prefs](screenshots/dating_prefs.png)
 
-[![Screenshot-2024-05-25-at-10-17-24.png](https://i.postimg.cc/vHbZdBFr/Screenshot-2024-05-25-at-10-17-24.png)](https://postimg.cc/3WfTX3wN)
+### Match Analysis
+#### Message Count Variability by Month (Last 12 Months)
+This box plot shows how the number of messages exchanged per match varies across each month over the past year. 
 
-The **Outgoing Likes You've Sent** section contains charts that go into more detail about the user's outgoing likes. The first chart shows users on the app that the user liked more than once. This scenario is perplexing, as it is not clear how this can happen, but does occur infrequently in the data. The second pie chart to the right shows the ratio of how many outgoing likes the user sent with a comment.
+*Example visualization*
+![Message Count Var](screenshots/msg_count_boxplot.png)
 
-[![Screenshot-2024-05-25-at-10-26-30.png](https://i.postimg.cc/SQwtX2N9/Screenshot-2024-05-25-at-10-26-30.png)](https://postimg.cc/XXkgmv5N)
+#### Response Latency between Match and First Message Sent
+This graph visualizes the response latency, or the time delay between when a match occurs and when the first message is sent.
 
-Underneath the pie charts, there is a table called **What You're Commenting When You Like Someone's Content**, that shows the comments the user left on other users' profiles when the user liked them. This table is useful for seeing what the user was saying to other users when they liked them.
+*Example visualization*
+![Response Latency](screenshots/resp_latency.png)
 
-The next section **Frequency of Action Types by Day**, shows the frequency of different actions the user took on the app by day. This is useful for seeing patterns of activity and when they were most active on the app.
+#### Duration of Time Between Match and Remove
+This histogram visualizes the duration of a connection and when it was removed or blocked. 
 
-[![Screenshot-2024-05-25-at-12-31-35.png](https://i.postimg.cc/nLfN53P0/Screenshot-2024-05-25-at-12-31-35.png)](https://postimg.cc/JsKTH5mk)
+*Example visualization*
+![Match Rm Duration](screenshots/duration_match_rm.png)
 
-After that, there is a pie chart called **How Many People Did You Give Your Number To?**, which shows exactly that. Of the all the interactions a user had that lead to chats, this graph shows the ratio of how many chats lead to the user giving out their phone number. This operates under the assumption that the user shared their phone number in one of the common formats listed below.
+#### Match Duration vs. Message Count
+This scatter plot explores the relationship between the number of messages exchanged in a match and the time until the match was removed or blocked. 
 
-[![Screenshot-2024-05-25-at-12-36-13.png](https://i.postimg.cc/MpqFmnMF/Screenshot-2024-05-25-at-12-36-13.png)](https://postimg.cc/gntsYkKV)
+*Example visualization*
+![Duration V Count](screenshots/duration_v_count.png)
 
-The last section of the Match Analytics shows **Outgoing Message per Chat**. This bar graph is a distribution of how many messages were sent by the user in each interaction where messages were exchanged. This is useful for seeing the average length of conversations the user had with others.
-
-[![Screenshot-2024-05-25-at-12-39-54.png](https://i.postimg.cc/J7jxY1LV/Screenshot-2024-05-25-at-12-39-54.png)](https://postimg.cc/hhPVfRvp)
-
-## User Analytics
-This tab is currently under construction and will be available in a future release.
-
-## Caveats
-Hinge changes and updates the schema of the data export from time to time, and that may or may not break the current analysis code and make things obsolete. So far, I haven't experienced any schema changes that have broken my code, but I assume that over time, changes will occur and things will no longer work. I haven't found a way to stay up to date with their schema changes at this time.
-
-## Assumptions
-Since there is no documentation provided by Hinge, here are some assumptions I am making about the data:
-1. Blocks, or "un-matches" (`where block_type = 'remove'`) could go either direction, meaning that block could represent someone removing the match with the user, or it could represent the user removing the block with someone else
-	1. I assume this also includes people the user came across while swiping that they wanted to remove from the deck
-2. Matches without a like in the same event mean that someone liked the user first, and the user matched with them (i.e. there was no outgoing like sent first)
-
-## Scenario Matrix
-There are several possible scenarios happening in the export data in what Hinge refers to as "matches". These are not all "matches", because some events are simply outgoing likes that were not reciprocated. This is why I refer to them as **interactions**, where an interaction represents the encounters (likes, matches, chats, blocks) that occurred between the user and another person. 
-
-Here are the different scenarios of interactions that occur in the data: 
-
-| Like | Match | Chats | Block | Meaning                                                                                                                                                                                                           |
-| ---- | ---- | ---- | ---- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| X |  |  |  | The user sent an outgoing, the person did not like them back                                                                                                                                                      |
-| X | X | X |  | The user sent an outgoing like, the other person liked them back, at least one message was exchanged                                                                                                              |
-|  | X | X |  | The user received an incoming like, the user liked the other person back and at least one message was exchanged                                                                                                   |
-|  |  |  | X | The match was removed or "unmatched", can't tell who unmatched who. For some reason, a lot of these exist without any other information and there is no way to tell which interaction it was originally linked to |
-|  | X |  | X | The user received an incoming like, the user liked the other person back, no messages were exchanged, and the match was removed                                                                                   |
+## How to Use
+1. Export your data from Hinge
+2. Install dependencies
+(Using a virtual environment is recommended)  
+`pip install -r requirements.txt`
+3. Create a root level folder named `data` and copy the `export` folder from the data export inside the `data` folder. This should contain:  
+- `media/`
+- `user.json`
+- `match.json`
+All of these are utilized by the project.
+4. Create a `.env` file and set environment variables for the following:
+- `USER_FILE_PATH`
+- `MATCH_FILE_PATH`  
+Refer to the `.env-defaults` file for details.
+5. The Flask app can be run in two ways:  
+    1. Running the app locally
+        `python app/main.py`
+    2. Running the app with Docker Compose
+        `docker compose build`
+        `docker compose up -d`

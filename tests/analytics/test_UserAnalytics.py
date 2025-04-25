@@ -9,6 +9,9 @@ from app.analytics.UserAnalytics import UserAnalytics
 # test values
 #########################################################################################
 USER_FILE_PATH = "fake/file/path/users.json"
+GEOLITE_DB_PATH = 'data/db_path.mmdb'
+ASSETS_PATH = 'fake/file/path/assets/'
+MEDIA_PATH = 'fake/file/path/media/'
 USER_DATA = '''
 {
     "devices": [
@@ -118,7 +121,6 @@ USER_DATA = '''
 '''
 COUNT_DISPLAYED_ATTRIB_OUTPUT = {'identity': {'true': 2, 'false': 4}, 'lifestyle': {'true': 2, 'false': 3}, 'career': {'true': 2, 'false': 1}, 'future_plans': {'true': 1, 'false': 3}}
 STRINGENCY_COUNTS = {'physical': {'true': 1, 'false': 1}, 'identity': {'true': 0, 'false': 3}, 'lifestyle': {'true': 0, 'false': 4}, 'career': {'true': 0, 'false': 1}, 'future_plans': {'true': 0, 'false': 2}}
-GEOLITE_DB_PATH = 'data/db_path.mmdb'
 
 #########################################################################################
 # pytest fixtures
@@ -127,9 +129,13 @@ GEOLITE_DB_PATH = 'data/db_path.mmdb'
 def user_analytics(monkeypatch):
     monkeypatch.setenv("USER_FILE_PATH", USER_FILE_PATH)
     monkeypatch.setenv("GEOLITE_DB_PATH", GEOLITE_DB_PATH)
+    monkeypatch.setenv("ASSETS_PATH", ASSETS_PATH)
+    monkeypatch.setenv("MEDIA_PATH", MEDIA_PATH)
 
     with patch("builtins.open", mock_open(read_data=USER_DATA)) as mock_file, \
-         patch("json.load", return_value=json.loads(USER_DATA)) as mock_json_load:
+         patch("json.load", return_value=json.loads(USER_DATA)) as mock_json_load, \
+         patch("os.makedirs"), \
+         patch("os.listdir", return_value=[]):  # prevent actual file ops
 
         user_analytics = UserAnalytics()
     return user_analytics

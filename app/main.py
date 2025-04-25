@@ -15,8 +15,6 @@ import pages.UserPage as UserPage
 import pages.HomePage as HomePage
 import pages.InfoPage as InfoPage
 
-from tools.Logger import logger
-
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 server = Flask(__name__)
 app = Dash(__name__, server=server, use_pages=True, external_stylesheets=external_stylesheets)
@@ -76,5 +74,4 @@ if __name__ == '__main__':
     host = os.environ.get("HOST")
     port = int(os.environ.get("PORT", 8050))
 
-    logger.info(f"Running the Hinge Data Analysis app on {host}:{port}...")
     app.run(debug=True, host=host, port=port)

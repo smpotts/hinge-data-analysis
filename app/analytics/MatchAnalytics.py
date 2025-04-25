@@ -6,7 +6,7 @@ class MatchAnalytics:
         self.match_file_path = os.environ.get("MATCH_FILE_PATH")
 
         if self.match_file_path is None:
-            raise Exception("MATCH_FILE_PATH environment varviable is not set.")
+            raise Exception("MATCH_FILE_PATH environment variable is not set.")
         
         if '.json' not in self.match_file_path:
             raise Exception("The match file needs to be a JSON file.")

@@ -6,6 +6,9 @@ import pandas as pd
 import json
 import os
 import shutil
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class UserAnalytics:
     def __init__(self):
@@ -28,12 +31,12 @@ class UserAnalytics:
             user_data = json.load(file)
         
         self.user_data = user_data
-
-    def get_media_file_paths(self):
+        
         # need to copy the files from the media_path to the assets_dir
         _copy_files(self.media_path, self.assets_path)
 
-        jpg_files = [f for f in os.listdir(self.assets_path) if f.endswith(".jpg")]
+    def get_media_file_paths(self):
+        jpg_files = [f for f in os.listdir(self.assets_path) if f.endswith(".jpg") or f.endswith(".jpeg") or f.endswith(".png")]
         return jpg_files
     
     def get_account_data(self):
@@ -167,6 +170,12 @@ class UserAnalytics:
     
 def _copy_files(src_dir, dest_dir):
     os.makedirs(dest_dir, exist_ok=True)
+    logging.info(f"Copying images files from media directory: {src_dir} to asset directory; {dest_dir}." )
+
+    # only proceed if the destination directory is empty
+    if os.listdir(dest_dir):
+        logging.info(f"Asset directory: '{dest_dir}' is not empty. Skipping copy...")
+        return
 
     # loop through all files in source directory
     for file_name in os.listdir(src_dir):

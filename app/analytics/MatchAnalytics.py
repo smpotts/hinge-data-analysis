@@ -44,15 +44,30 @@ class MatchAnalytics:
         return all_chats 
 
     def get_message_count_last_12_months(self):
-        now = datetime.now()
-        one_year_ago = now - timedelta(days=365)
+        match_timestamps = []
+        for entry in self.match_data:
+            match = entry.get("match", [])
+            if match and match[0].get("timestamp"):
+                try:
+                    match_timestamps.append(datetime.fromisoformat(match[0]["timestamp"]))
+                except ValueError:
+                    continue
+
+        if not match_timestamps:
+            return []
+
+        newest_match_time = max(match_timestamps)
+        one_year_ago = newest_match_time - timedelta(days=365)
 
         msg_counts_per_month = []
         for entry in self.match_data:
             match = entry.get("match", [])
             chats = entry.get("chats", [])
-            if match:
-                match_time = datetime.fromisoformat(match[0]["timestamp"])
+            if match and match[0].get("timestamp"):
+                try:
+                    match_time = datetime.fromisoformat(match[0]["timestamp"])
+                except ValueError:
+                    continue
                 if match_time >= one_year_ago:
                     month = match_time.strftime("%Y-%m")
                     msg_counts_per_month.append({
